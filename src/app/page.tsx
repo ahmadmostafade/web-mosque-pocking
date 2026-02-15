@@ -2,11 +2,16 @@ import Link from "next/link";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
 import { calculateDonationProgress } from "@/lib/donations";
+import { calculateTotalBySource } from "@/lib/donation-store";
 import { fetchPrayerTimes, getNextPrayer } from "@/lib/prayer-times";
 
 export default async function HomePage() {
-  // In production, these values come from the database
-  const progress = calculateDonationProgress(15000, 0, 0);
+  const totals = calculateTotalBySource();
+  const progress = calculateDonationProgress(
+    totals.manual,
+    totals.stripe,
+    totals.adjustment
+  );
   const prayerTimes = await fetchPrayerTimes();
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes) : null;
 

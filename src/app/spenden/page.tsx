@@ -6,6 +6,8 @@ import { calculateDonationProgress } from "@/lib/donations";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
 
+import { calculateTotalBySource } from "@/lib/donation-store";
+
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
   description:
@@ -13,7 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default function SpendenPage() {
-  const progress = calculateDonationProgress(15000, 0, 0);
+  const totals = calculateTotalBySource();
+  const progress = calculateDonationProgress(
+    totals.manual,
+    totals.stripe,
+    totals.adjustment
+  );
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
