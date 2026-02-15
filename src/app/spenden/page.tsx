@@ -4,6 +4,7 @@ import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
 import { calculateDonationProgress } from "@/lib/donations";
 import { SITE_CONFIG } from "@/lib/constants";
+import { getFaqSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
@@ -16,6 +17,10 @@ export default function SpendenPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqSchema()) }}
+      />
       <h1 className="text-3xl font-bold text-mosque-green-700 mb-2">
         Spenden – Moscheekauf 60.000 €
       </h1>

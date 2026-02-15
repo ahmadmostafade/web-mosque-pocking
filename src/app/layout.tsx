@@ -5,6 +5,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import { SITE_CONFIG } from "@/lib/constants";
+import {
+  getOrganizationSchema,
+  getLocalBusinessSchema,
+} from "@/lib/structured-data";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +33,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="de">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getOrganizationSchema()),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getLocalBusinessSchema()),
+          }}
+        />
+      </head>
       <body className={`${inter.className} flex flex-col min-h-screen`}>
         <Navbar />
         <main className="flex-grow">{children}</main>
