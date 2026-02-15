@@ -1,0 +1,156 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+
+interface DonationData {
+  donations: Array<{
+    id: string;
+    amount: number;
+    source: string;
+    date: string;
+    donorName?: string;
+    anonymous: boolean;
+  }>;
+  total: { manual: number; stripe: number; adjustment: number; total: number };
+  settings: { goalAmount: number; manualAdjustment: number };
+}
+
+export default function AdminDonationsPage() {
+  const [data, setData] = useState<DonationData | null>(null);
+  const [amount, setAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [anonymous, setAnonymous] = useState(false);
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+
+  const loadData = useCallback(async () => {
+    const res = await fetch("/api/donations");
+    if (res.ok) setData(await res.json());
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/auth/session").then((r) => {
+      if (!r.ok) router.push("/admin/login");
+      else loadData();
+    });
+  }, [router, loadData]);
+
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await fetch("/api/donations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: parseFloat(amount),
+        source: "manual",
+        donorName: anonymous ? undefined : donorName,
+        anonymous,
+      }),
+    });
+    if (res.ok) {
+      setMessage("Spende erfolgreich hinzugefügt.");
+      setAmount("");
+      setDonorName("");
+      setAnonymous(false);
+      loadData();
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-mosque-green-700 text-white px-6 py-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Spenden verwalten</h1>
+        <button onClick={() => router.push("/admin")} className="text-sm hover:underline">
+          ← Zurück
+        </button>
+      </nav>
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {data && (
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 className="font-bold text-lg mb-2">Aktueller Stand</h2>
+            <p className="text-2xl font-bold text-mosque-green-700">
+              {data.total.total.toLocaleString("de-DE")} € / 60.000 €
+            </p>
+            <p className="text-sm text-gray-500">
+              Manuell: {data.total.manual.toLocaleString("de-DE")} € | Stripe:{" "}
+              {data.total.stripe.toLocaleString("de-DE")} € | Anpassung:{" "}
+              {data.total.adjustment.toLocaleString("de-DE")} €
+            </p>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <h2 className="font-bold text-lg mb-4">Neue Spende eintragen</h2>
+          {message && (
+            <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">{message}</div>
+          )}
+          <form onSubmit={handleAdd} className="space-y-4">
+            <div>
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+                Betrag (€)
+              </label>
+              <input
+                id="amount"
+                type="number"
+                min="1"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                required
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="anonymous"
+                type="checkbox"
+                checked={anonymous}
+                onChange={(e) => setAnonymous(e.target.checked)}
+              />
+              <label htmlFor="anonymous" className="text-sm text-gray-700">Anonyme Spende</label>
+            </div>
+            {!anonymous && (
+              <div>
+                <label htmlFor="donorName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Spendername
+                </label>
+                <input
+                  id="donorName"
+                  type="text"
+                  value={donorName}
+                  onChange={(e) => setDonorName(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+            >
+              Spende eintragen
+            </button>
+          </form>
+        </div>
+
+        {data && data.donations.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="font-bold text-lg mb-4">Letzte Spenden</h2>
+            <div className="space-y-2">
+              {data.donations.map((d) => (
+                <div key={d.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div>
+                    <span className="font-medium">{d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}</span>
+                    <span className="text-sm text-gray-500 ml-2">{d.date}</span>
+                  </div>
+                  <span className="font-bold text-mosque-green-700">{d.amount.toLocaleString("de-DE")} €</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
