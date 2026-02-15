@@ -1,6 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ContactForm from "./ContactForm";
+
+beforeEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("ContactForm", () => {
   it("renders all form fields", () => {
@@ -18,7 +22,12 @@ describe("ContactForm", () => {
     expect(screen.getByText(/E-Mail-Adresse ein/)).toBeInTheDocument();
   });
 
-  it("shows success message after valid submission", () => {
+  it("shows success message after valid submission", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
     render(<ContactForm />);
 
     fireEvent.change(screen.getByLabelText("Name *"), {
@@ -35,7 +44,10 @@ describe("ContactForm", () => {
     });
 
     fireEvent.click(screen.getByText("Nachricht senden"));
-    expect(screen.getByText(/Vielen Dank/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Vielen Dank/)).toBeInTheDocument();
+    });
   });
 
   it("has a hidden honeypot field", () => {

@@ -13,6 +13,7 @@ export default function ContactForm() {
   const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -21,7 +22,7 @@ export default function ContactForm() {
     setErrors({});
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     // Honeypot spam check
@@ -31,8 +32,24 @@ export default function ContactForm() {
     setErrors(result.errors);
 
     if (result.valid) {
-      // In production: send via API route
-      setSubmitted(true);
+      setSending(true);
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formData, website: honeypot }),
+        });
+        if (res.ok) {
+          setSubmitted(true);
+        } else {
+          const data = await res.json();
+          setErrors(data.errors || { form: "Ein Fehler ist aufgetreten." });
+        }
+      } catch {
+        setErrors({ form: "Ein Fehler ist aufgetreten." });
+      } finally {
+        setSending(false);
+      }
     }
   }
 
@@ -130,6 +147,7 @@ export default function ContactForm() {
         >
           Nachricht senden
         </button>
+        {errors.form && <p className="text-red-500 text-sm mt-2">{errors.form}</p>}
       </div>
     </form>
   );
