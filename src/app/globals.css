@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-mosque-green-50: #f0fdf4;
+  --color-mosque-green-100: #dcfce7;
+  --color-mosque-green-200: #bbf7d0;
+  --color-mosque-green-300: #86efac;
+  --color-mosque-green-400: #4ade80;
+  --color-mosque-green-500: #166534;
+  --color-mosque-green-600: #15803d;
+  --color-mosque-green-700: #14532d;
+  --color-mosque-green-800: #052e16;
+  --color-mosque-green-900: #022c22;
+
+  --color-mosque-gold-50: #fffbeb;
+  --color-mosque-gold-100: #fef3c7;
+  --color-mosque-gold-200: #fde68a;
+  --color-mosque-gold-300: #fcd34d;
+  --color-mosque-gold-400: #d4a017;
+  --color-mosque-gold-500: #b8860b;
+
+  --font-arabic: "Amiri", "Noto Naskh Arabic", serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  [dir="rtl"] {
+    font-family: var(--font-arabic);
+  }
 }
