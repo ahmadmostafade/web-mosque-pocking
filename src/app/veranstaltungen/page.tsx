@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getEventSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Veranstaltungen",
@@ -29,6 +30,15 @@ export default function VeranstaltungenPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      {upcoming.map((event) => (
+        <script
+          key={`ld-${event.id}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getEventSchema(event)),
+          }}
+        />
+      ))}
       <h1 className="text-3xl font-bold text-mosque-green-700 mb-8">
         Veranstaltungen
       </h1>

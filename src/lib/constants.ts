@@ -39,6 +39,7 @@ export const NAV_LINKS = [
     label: "Veranstaltungen",
     labelAr: "الفعاليات",
   },
+  { href: "/galerie", label: "Galerie", labelAr: "معرض الصور" },
   { href: "/kontakt", label: "Kontakt", labelAr: "اتصل بنا" },
 ] as const;
 
