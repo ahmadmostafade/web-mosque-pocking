@@ -1,6 +1,8 @@
+import { getAdminUser } from "./db-admin";
+
 /**
  * Simple authentication system for admin dashboard.
- * MVP: in-memory session store. Production: use JWT + DB.
+ * Uses database for user credentials and in-memory session store.
  */
 
 export interface Session {
@@ -11,11 +13,6 @@ export interface Session {
 }
 
 const SESSION_DURATION = 60 * 60 * 1000; // 1 hour
-
-// Default admin credentials (in production: hashed in DB)
-const ADMIN_USERS: Record<string, string> = {
-  admin: "moschee2026!",
-};
 
 let sessions: Map<string, Session> = new Map();
 let loginAttempts: Map<string, { count: number; lastAttempt: number }> =
@@ -53,7 +50,10 @@ export function authenticate(
 
   recordAttempt(ip);
 
-  if (ADMIN_USERS[username] && ADMIN_USERS[username] === password) {
+  // Get user from database
+  const user = getAdminUser(username);
+  if (user && user.password_hash === password) {
+    // Note: In production, use bcrypt.compare(password, user.password_hash)
     const session: Session = {
       id: `sess-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       username,

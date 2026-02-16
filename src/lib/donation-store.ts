@@ -1,6 +1,13 @@
+import {
+  getAllDonations,
+  addDonation as dbAddDonation,
+  getDonationTotals,
+  updateDonationAdjustment,
+  getDonationGoal,
+} from "./db-donations";
+
 /**
- * In-memory donation store for MVP.
- * In production, this will be replaced by Supabase/PostgreSQL.
+ * Donation store using SQLite database.
  */
 
 export interface Donation {
@@ -18,52 +25,46 @@ export interface DonationSettings {
   lastUpdated: string;
 }
 
-// In-memory store (replaced by DB in Phase 2)
-let donations: Donation[] = [
-  {
-    id: "seed-1",
-    amount: 10000,
-    source: "manual",
-    date: "2026-01-15",
-    donorName: "Gemeinde",
-    anonymous: false,
-  },
-  {
-    id: "seed-2",
-    amount: 5000,
-    source: "manual",
-    date: "2026-02-01",
-    anonymous: true,
-  },
-];
-
-let settings: DonationSettings = {
-  goalAmount: 60000,
-  manualAdjustment: 0,
-  lastUpdated: new Date().toISOString(),
-};
-
 export function getDonations(): Donation[] {
-  return [...donations];
+  const dbDonations = getAllDonations();
+  return dbDonations.map((d) => ({
+    id: d.id.toString(),
+    amount: d.amount,
+    source: d.source as "manual" | "stripe",
+    date: d.created_at.split("T")[0],
+    donorName: d.donor_name || undefined,
+    anonymous: Boolean(d.anonymous),
+  }));
 }
 
 export function getDonationSettings(): DonationSettings {
-  return { ...settings };
+  const totals = getDonationTotals();
+  const goal = getDonationGoal();
+
+  return {
+    goalAmount: goal,
+    manualAdjustment: totals.adjustment,
+    lastUpdated: new Date().toISOString(),
+  };
 }
 
 export function addDonation(donation: Omit<Donation, "id">): Donation {
-  const newDonation: Donation = {
+  const id = dbAddDonation(
+    donation.amount,
+    donation.source,
+    donation.anonymous,
+    donation.donorName || null,
+    "admin"
+  );
+
+  return {
     ...donation,
-    id: `don-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id.toString(),
   };
-  donations.push(newDonation);
-  settings.lastUpdated = new Date().toISOString();
-  return newDonation;
 }
 
 export function updateManualAdjustment(amount: number): void {
-  settings.manualAdjustment = amount;
-  settings.lastUpdated = new Date().toISOString();
+  updateDonationAdjustment(amount, "admin");
 }
 
 export function calculateTotalBySource(): {
@@ -72,27 +73,11 @@ export function calculateTotalBySource(): {
   adjustment: number;
   total: number;
 } {
-  const manual = donations
-    .filter((d) => d.source === "manual")
-    .reduce((sum, d) => sum + d.amount, 0);
-  const stripe = donations
-    .filter((d) => d.source === "stripe")
-    .reduce((sum, d) => sum + d.amount, 0);
-
-  return {
-    manual,
-    stripe,
-    adjustment: settings.manualAdjustment,
-    total: manual + stripe + settings.manualAdjustment,
-  };
+  return getDonationTotals();
 }
 
 // For testing: reset store
 export function resetStore(): void {
-  donations = [];
-  settings = {
-    goalAmount: 60000,
-    manualAdjustment: 0,
-    lastUpdated: new Date().toISOString(),
-  };
+  // This would require a database reset function
+  // For now, just a placeholder
 }

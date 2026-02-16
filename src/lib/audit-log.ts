@@ -1,5 +1,11 @@
+import {
+  logAuditAction,
+  getAuditLog as dbGetAuditLog,
+  getAuditLogByResource as dbGetAuditLogByResource,
+} from "./db-audit";
+
 /**
- * Audit logging for admin actions.
+ * Audit logging for admin actions using database.
  * Tracks who changed what and when.
  */
 
@@ -12,34 +18,48 @@ export interface AuditEntry {
   details?: string;
 }
 
-let auditLog: AuditEntry[] = [];
-
 export function logAction(
   username: string,
   action: string,
   resource: string,
   details?: string
 ): AuditEntry {
-  const entry: AuditEntry = {
-    id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+  logAuditAction(username, action, resource, details || null);
+
+  return {
+    id: `audit-${Date.now()}`,
     timestamp: new Date().toISOString(),
     username,
     action,
     resource,
     details,
   };
-  auditLog.push(entry);
-  return entry;
 }
 
 export function getAuditLog(limit = 50): AuditEntry[] {
-  return [...auditLog].reverse().slice(0, limit);
+  const dbEntries = dbGetAuditLog(limit);
+  return dbEntries.map((e) => ({
+    id: e.id.toString(),
+    timestamp: e.created_at,
+    username: e.username,
+    action: e.action,
+    resource: e.resource,
+    details: e.details || undefined,
+  }));
 }
 
 export function getAuditLogByResource(resource: string): AuditEntry[] {
-  return auditLog.filter((e) => e.resource === resource).reverse();
+  const dbEntries = dbGetAuditLogByResource(resource);
+  return dbEntries.map((e) => ({
+    id: e.id.toString(),
+    timestamp: e.created_at,
+    username: e.username,
+    action: e.action,
+    resource: e.resource,
+    details: e.details || undefined,
+  }));
 }
 
 export function resetAuditLog(): void {
-  auditLog = [];
+  // For testing - would need database reset
 }
