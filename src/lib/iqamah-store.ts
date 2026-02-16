@@ -6,53 +6,30 @@ export interface IqamahTimes {
   Asr: string;
   Maghrib: string;
   Isha: string;
-  Jummah: string;
   lastUpdated: string;
 }
 
 export function getIqamahTimes(): IqamahTimes {
   const dbTimes = getAllIqamahTimes();
-  const times: Partial<IqamahTimes> = {
-    Jummah: "13:45", // Fixed time for Jummah
-  };
+  const times: Partial<IqamahTimes> = {};
 
   let lastUpdated = new Date(0).toISOString();
 
   dbTimes.forEach((time) => {
-    if (time.prayer_name === "Maghrib") {
-      times[time.prayer_name] = `+${time.offset_minutes} min`;
-    } else {
-      // For other prayers, we store offset but display as fixed time
-      // In a real implementation, you'd calculate from prayer times API
-      times[time.prayer_name as keyof IqamahTimes] = formatOffsetAsTime(
-        time.offset_minutes
-      );
-    }
+    times[time.prayer_name as keyof IqamahTimes] = `+${time.offset_minutes} min`;
     if (time.updated_at > lastUpdated) {
       lastUpdated = time.updated_at;
     }
   });
 
   return {
-    Fajr: times.Fajr || "06:00",
-    Dhuhr: times.Dhuhr || "13:00",
-    Asr: times.Asr || "16:00",
-    Maghrib: times.Maghrib || "+10 min",
-    Isha: times.Isha || "20:00",
-    Jummah: times.Jummah || "13:45",
+    Fajr: times.Fajr || "+30 min",
+    Dhuhr: times.Dhuhr || "+10 min",
+    Asr: times.Asr || "+10 min",
+    Maghrib: times.Maghrib || "+5 min",
+    Isha: times.Isha || "+10 min",
     lastUpdated,
   };
-}
-
-function formatOffsetAsTime(offsetMinutes: number): string {
-  // This is a simplified version - in production, calculate from actual prayer times
-  const baseHours: Record<string, number> = {
-    Fajr: 6,
-    Dhuhr: 13,
-    Asr: 16,
-    Isha: 20,
-  };
-  return `${offsetMinutes} min after`;
 }
 
 export function updateIqamahTimes(
@@ -60,15 +37,12 @@ export function updateIqamahTimes(
   updatedBy: string = "admin"
 ): IqamahTimes {
   Object.entries(times).forEach(([prayer, value]) => {
-    if (prayer === "Jummah") return; // Skip Jummah, it's fixed
-
     let offsetMinutes = 15; // default
     if (typeof value === "string") {
-      if (value.includes("+")) {
-        offsetMinutes = parseInt(value.replace(/\D/g, "")) || 10;
-      } else {
-        // Parse time string to offset (simplified)
-        offsetMinutes = 15;
+      // Parse "+X min" format
+      const match = value.match(/\+?(\d+)/);
+      if (match) {
+        offsetMinutes = parseInt(match[1]);
       }
     }
 
@@ -82,6 +56,6 @@ export function resetIqamahStore(): void {
   // For testing purposes
   const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
   prayers.forEach((prayer) => {
-    upsertIqamahTime(prayer, prayer === "Maghrib" ? 10 : 15, "system");
+    upsertIqamahTime(prayer, prayer === "Maghrib" ? 5 : 15, "system");
   });
 }
