@@ -59,7 +59,6 @@ function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS jummah_times (
       id INTEGER PRIMARY KEY CHECK (id = 1),
       khutba_time TEXT NOT NULL DEFAULT '12:30',
-      iqamah_time TEXT NOT NULL DEFAULT '13:45',
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_by TEXT
     );
@@ -119,7 +118,7 @@ function initializeDatabase() {
 
   if (jummahExists.count === 0) {
     db.prepare(
-      "INSERT INTO jummah_times (id, khutba_time, iqamah_time) VALUES (1, '12:30', '13:45')"
+      "INSERT INTO jummah_times (id, khutba_time) VALUES (1, '12:30')"
     ).run();
   }
 }

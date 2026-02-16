@@ -7,7 +7,6 @@ export async function GET() {
     const times = getJummahTimes();
     return NextResponse.json({
       khutba: times.khutba_time,
-      iqamah: times.iqamah_time,
     });
   } catch (error) {
     console.error("Error fetching Jummah times:", error);
@@ -26,17 +25,17 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { khutba, iqamah } = body;
+    const { khutba } = body;
 
-    if (!khutba || !iqamah) {
+    if (!khutba) {
       return NextResponse.json(
-        { error: "Missing khutba or iqamah time" },
+        { error: "Missing khutba time" },
         { status: 400 }
       );
     }
 
-    updateJummahTimes(khutba, iqamah, "admin");
-    logAction("admin", "update", "jummah", `Khutba: ${khutba}, Iqamah: ${iqamah}`);
+    updateJummahTimes(khutba, "admin");
+    logAction("admin", "update", "jummah", `Khutba: ${khutba}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

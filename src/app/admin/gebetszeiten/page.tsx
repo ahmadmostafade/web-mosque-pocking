@@ -14,7 +14,6 @@ interface IqamahData {
 
 interface JummahData {
   khutba: string;
-  iqamah: string;
 }
 
 const PRAYER_LABELS: Record<string, string> = {
@@ -27,9 +26,9 @@ const PRAYER_LABELS: Record<string, string> = {
 
 export default function AdminPrayerTimesPage() {
   const [times, setTimes] = useState<IqamahData | null>(null);
-  const [jummah, setJummah] = useState<JummahData>({ khutba: "12:30", iqamah: "13:45" });
+  const [jummah, setJummah] = useState<JummahData>({ khutba: "12:30" });
   const [form, setForm] = useState<Record<string, string>>({});
-  const [jummahForm, setJummahForm] = useState<JummahData>({ khutba: "12:30", iqamah: "13:45" });
+  const [jummahForm, setJummahForm] = useState<JummahData>({ khutba: "12:30" });
   const [message, setMessage] = useState("");
   const router = useRouter();
 
@@ -82,7 +81,7 @@ export default function AdminPrayerTimesPage() {
       body: JSON.stringify(jummahForm),
     });
     if (res.ok) {
-      setMessage("Jumuʿah-Zeiten aktualisiert.");
+      setMessage("Jumuʿah-Zeit aktualisiert.");
       loadTimes();
       setTimeout(() => setMessage(""), 3000);
     }
@@ -104,7 +103,10 @@ export default function AdminPrayerTimesPage() {
 
         {/* Iqamah Times */}
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-bold text-mosque-green-700 mb-4">Iqamah-Zeiten</h2>
+          <h2 className="text-lg font-bold text-mosque-green-700 mb-2">Iqamah-Zeiten</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Geben Sie die Minuten nach dem Adhan an (z.B. +15 min)
+          </p>
           {times && (
             <p className="text-sm text-gray-500 mb-4">
               Letzte Aktualisierung:{" "}
@@ -113,26 +115,28 @@ export default function AdminPrayerTimesPage() {
           )}
           <form onSubmit={handleSave} className="space-y-4">
             {Object.entries(PRAYER_LABELS).map(([key, label]) => (
-              <div key={key}>
-                <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-1">
+              <div key={key} className="flex items-center gap-4">
+                <label htmlFor={key} className="w-24 text-sm font-medium text-gray-700">
                   {label}
                 </label>
-                <input
-                  id={key}
-                  type="text"
-                  value={form[key] || ""}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  placeholder="z.B. +15 min oder +10 min"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Format: +X min (z.B. +15 min für 15 Minuten nach Adhan)
-                </p>
+                <div className="flex-1 flex items-center gap-2">
+                  <span className="text-gray-500">+</span>
+                  <input
+                    id={key}
+                    type="number"
+                    min="0"
+                    max="60"
+                    value={form[key]?.replace(/\D/g, "") || "15"}
+                    onChange={(e) => setForm({ ...form, [key]: `+${e.target.value} min` })}
+                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                  />
+                  <span className="text-gray-500">min</span>
+                </div>
               </div>
             ))}
             <button
               type="submit"
-              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+              className="w-full bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
             >
               Iqamah-Zeiten speichern
             </button>
@@ -141,37 +145,28 @@ export default function AdminPrayerTimesPage() {
 
         {/* Jummah Times */}
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-bold text-mosque-green-700 mb-4">Jumuʿah (Freitagsgebet)</h2>
+          <h2 className="text-lg font-bold text-mosque-green-700 mb-2">Jumuʿah (Freitagsgebet)</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Khutba-Beginn am Freitag
+          </p>
           <form onSubmit={handleJummahSave} className="space-y-4">
-            <div>
-              <label htmlFor="khutba" className="block text-sm font-medium text-gray-700 mb-1">
-                Khutba-Zeit
+            <div className="flex items-center gap-4">
+              <label htmlFor="khutba" className="w-24 text-sm font-medium text-gray-700">
+                Khutba
               </label>
               <input
                 id="khutba"
                 type="time"
                 value={jummahForm.khutba}
-                onChange={(e) => setJummahForm({ ...jummahForm, khutba: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label htmlFor="jummah-iqamah" className="block text-sm font-medium text-gray-700 mb-1">
-                Iqamah-Zeit
-              </label>
-              <input
-                id="jummah-iqamah"
-                type="time"
-                value={jummahForm.iqamah}
-                onChange={(e) => setJummahForm({ ...jummahForm, iqamah: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                onChange={(e) => setJummahForm({ khutba: e.target.value })}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
             <button
               type="submit"
-              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+              className="w-full bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
             >
-              Jumuʿah-Zeiten speichern
+              Jumuʿah-Zeit speichern
             </button>
           </form>
         </div>
