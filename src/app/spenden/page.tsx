@@ -4,8 +4,8 @@ import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
-import { getDonationGoal } from "@/lib/db-donations";
-import db from "@/lib/db";
+import { calculateDonationProgress } from "@/lib/donations";
+import { calculateTotalBySource } from "@/lib/donation-store";
 
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
@@ -13,23 +13,13 @@ export const metadata: Metadata = {
     "Unterstützen Sie den Kauf der Moschee Pocking mit Ihrer Spende.",
 };
 
-// Get manual progress from database
-function getManualProgress() {
-  const stmt = db.prepare("SELECT value FROM settings WHERE key = 'donation_progress'");
-  const row = stmt.get() as { value: string } | undefined;
-  return row ? parseFloat(row.value) : 0;
-}
-
 export default function SpendenPage() {
-  const currentAmount = getManualProgress();
-  const goalAmount = getDonationGoal();
-  const percentage = Math.min(100, Math.round((currentAmount / goalAmount) * 100));
-
-  const progress = {
-    currentAmount,
-    goalAmount,
-    percentage,
-  };
+  const totals = calculateTotalBySource();
+  const progress = calculateDonationProgress(
+    totals.manual,
+    totals.stripe,
+    totals.adjustment
+  );
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -38,7 +28,7 @@ export default function SpendenPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqSchema()) }}
       />
       <h1 className="text-3xl font-bold text-mosque-green-700 mb-2">
-        Spenden – Moscheekauf {goalAmount.toLocaleString("de-DE")} €
+        Spenden – Moscheekauf {progress.goalAmount.toLocaleString("de-DE")} €
       </h1>
       <p className="text-gray-600 mb-8">
         Unterstützen Sie uns beim Kauf unserer Moschee. Jede Spende zählt.
@@ -60,20 +50,6 @@ export default function SpendenPage() {
         </p>
         <p className="text-gray-700">
           Jede Spende, egal wie klein, bringt uns dem Ziel näher.
-        </p>
-      </div>
-
-      {/* Transparency */}
-      <div className="bg-mosque-green-50 rounded-xl p-6 mb-8">
-        <h2 className="text-xl font-bold text-mosque-green-700 mb-3">
-          Transparenz
-        </h2>
-        <p className="text-gray-700">
-          Alle Spenden werden ausschließlich für den Kauf und die Renovierung
-          des Moschee-Gebäudes verwendet. Der Verein{" "}
-          <strong>{SITE_CONFIG.bankDetails.accountHolder}</strong> verwaltet die
-          Gelder treuhänderisch und veröffentlicht regelmäßige Updates zum
-          Projektfortschritt.
         </p>
       </div>
 
@@ -125,6 +101,20 @@ export default function SpendenPage() {
           </h2>
           <DonationForm />
         </div>
+      </div>
+
+      {/* Transparency */}
+      <div className="bg-mosque-green-50 rounded-xl p-6 mt-8">
+        <h2 className="text-xl font-bold text-mosque-green-700 mb-3">
+          Transparenz
+        </h2>
+        <p className="text-gray-700">
+          Alle Spenden werden ausschließlich für den Kauf und die Renovierung
+          des Moschee-Gebäudes verwendet. Der Verein{" "}
+          <strong>{SITE_CONFIG.bankDetails.accountHolder}</strong> verwaltet die
+          Gelder treuhänderisch und veröffentlicht regelmäßige Updates zum
+          Projektfortschritt.
+        </p>
       </div>
     </div>
   );

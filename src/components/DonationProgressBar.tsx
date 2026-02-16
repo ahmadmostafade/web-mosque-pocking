@@ -9,6 +9,22 @@ export default function DonationProgressBar({
   progress,
   showDetails = true,
 }: Props) {
+  // Handle invalid or missing lastUpdated date
+  const getDisplayDate = () => {
+    try {
+      const date = new Date(progress.lastUpdated);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        // Return today's date if invalid
+        return new Date().toLocaleDateString("de-DE");
+      }
+      return date.toLocaleDateString("de-DE");
+    } catch {
+      // Return today's date if parsing fails
+      return new Date().toLocaleDateString("de-DE");
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="flex justify-between text-sm mb-1">
@@ -39,10 +55,7 @@ export default function DonationProgressBar({
       {showDetails && (
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>Noch {formatCurrency(progress.remaining)} benötigt</span>
-          <span>
-            Aktualisiert:{" "}
-            {new Date(progress.lastUpdated).toLocaleDateString("de-DE")}
-          </span>
+          <span>Aktualisiert: {getDisplayDate()}</span>
         </div>
       )}
     </div>
