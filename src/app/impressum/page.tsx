@@ -29,20 +29,26 @@ export default function ImpressumPage() {
         </p>
 
         <h2>Vertretungsberechtigter Vorstand</h2>
-        <p>[Name des Vorsitzenden], Vorsitzender</p>
+        <p>
+          Vorsitzender: {SITE_CONFIG.legalInfo.chairman}
+          <br />
+          Stellvertretender Vorsitzender: {SITE_CONFIG.legalInfo.viceChairman}
+          <br />
+          Kassenwart: {SITE_CONFIG.legalInfo.treasurer}
+        </p>
 
         <h2>Registereintrag</h2>
         <p>
           Eintragung im Vereinsregister.
           <br />
-          Registergericht: Amtsgericht Passau
+          Registergericht: {SITE_CONFIG.legalInfo.registrationCourt}
           <br />
-          Registernummer: [VR-Nummer]
+          Rechtsform: {SITE_CONFIG.legalInfo.legalForm}
         </p>
 
         <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
         <p>
-          [Name des Verantwortlichen]
+          {SITE_CONFIG.legalInfo.chairman}
           <br />
           {SITE_CONFIG.contact.address}
         </p>

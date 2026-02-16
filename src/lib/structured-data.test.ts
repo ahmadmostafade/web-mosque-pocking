@@ -3,7 +3,6 @@ import {
   getOrganizationSchema,
   getLocalBusinessSchema,
   getFaqSchema,
-  getEventSchema,
 } from "./structured-data";
 
 describe("getOrganizationSchema", () => {
@@ -39,19 +38,5 @@ describe("getFaqSchema", () => {
       expect(q.acceptedAnswer["@type"]).toBe("Answer");
       expect(q.acceptedAnswer.text).toBeTruthy();
     });
-  });
-});
-
-describe("getEventSchema", () => {
-  it("returns valid Event schema", () => {
-    const schema = getEventSchema({
-      title: "Iftar",
-      date: "2026-03-01",
-      description: "Gemeinsames Fastenbrechen",
-    });
-    expect(schema["@type"]).toBe("Event");
-    expect(schema.name).toBe("Iftar");
-    expect(schema.startDate).toBe("2026-03-01");
-    expect(schema.location["@type"]).toBe("Place");
   });
 });

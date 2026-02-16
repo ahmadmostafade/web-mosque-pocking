@@ -1,5 +1,5 @@
 export const SITE_CONFIG = {
-  name: "Moschee Pocking",
+  name: "Islamisches Bildungsforum Pocking e.V.",
   description:
     "Moschee-Gemeinde Pocking – Spenden, Gebetszeiten und Gemeinschaft",
   url: "https://moschee-pocking.de",
@@ -12,20 +12,27 @@ export const SITE_CONFIG = {
     longitude: 13.3131,
   },
   bankDetails: {
-    iban: "DE00 0000 0000 0000 0000 00",
-    bic: "XXXXXXXX",
-    bank: "Sparkasse",
-    accountHolder: "Islamischer Verein Pocking e.V.",
+    iban: "DE79 7405 0000 0031 4021 00",
+    bic: "BYLADEM1PAS",
+    bank: "Sparkasse Passau",
+    accountHolder: "Islamisches Bildungsforum Pocking e.V.",
     reference: "Moscheekauf",
   },
   contact: {
     email: "info@moschee-pocking.de",
     phone: "+49 000 0000000",
-    address: "Musterstraße 1, 94060 Pocking",
+    address: "Passauer Str. 25, 94060 Pocking",
   },
   prayerApi: {
     baseUrl: "https://api.aladhan.com/v1",
     method: 3, // Muslim World League
+  },
+  legalInfo: {
+    legalForm: "Verein e.V.",
+    registrationCourt: "Amtsgericht Passau",
+    chairman: "Saad, Hashem",
+    viceChairman: "Putta, Luca",
+    treasurer: "Aamer, Kazala",
   },
 } as const;
 
@@ -34,12 +41,6 @@ export const NAV_LINKS = [
   { href: "/ueber-uns", label: "Über uns", labelAr: "من نحن" },
   { href: "/gebetszeiten", label: "Gebetszeiten", labelAr: "أوقات الصلاة" },
   { href: "/spenden", label: "Spenden", labelAr: "تبرع" },
-  {
-    href: "/veranstaltungen",
-    label: "Veranstaltungen",
-    labelAr: "الفعاليات",
-  },
-  { href: "/news", label: "News", labelAr: "أخبار" },
   { href: "/galerie", label: "Galerie", labelAr: "معرض الصور" },
   { href: "/kontakt", label: "Kontakt", labelAr: "اتصل بنا" },
 ] as const;

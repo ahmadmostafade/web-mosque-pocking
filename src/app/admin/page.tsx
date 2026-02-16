@@ -6,8 +6,6 @@ import Link from "next/link";
 
 interface DashboardData {
   donations: { total: number; goal: number; percentage: number };
-  events: number;
-  posts: number;
 }
 
 export default function AdminDashboard() {
@@ -26,18 +24,10 @@ export default function AdminDashboard() {
 
   const loadData = useCallback(async () => {
     try {
-      const [donRes, evtRes, blogRes] = await Promise.all([
-        fetch("/api/donations"),
-        fetch("/api/events"),
-        fetch("/api/blog"),
-      ]);
-
+      const donRes = await fetch("/api/donations");
       const donData = await donRes.json();
-      const evtData = await evtRes.json();
-      const blogData = await blogRes.json();
 
       const total = donData.total?.total || 0;
-      const goal = donData.total?.manual || 60000;
 
       setData({
         donations: {
@@ -45,8 +35,6 @@ export default function AdminDashboard() {
           goal: 60000,
           percentage: Math.min(100, Math.round((total / 60000) * 100)),
         },
-        events: evtData.events?.length || 0,
-        posts: blogData.posts?.length || 0,
       });
     } catch {
       // Silently handle errors
@@ -94,7 +82,7 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Übersicht</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-md p-6">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Spendenstand</h3>
             <p className="text-3xl font-bold text-mosque-green-700">
@@ -103,16 +91,6 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500 mt-1">
               {data?.donations.percentage}% von 60.000 €
             </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Veranstaltungen</h3>
-            <p className="text-3xl font-bold text-mosque-green-700">{data?.events}</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Blog-Beiträge</h3>
-            <p className="text-3xl font-bold text-mosque-green-700">{data?.posts}</p>
           </div>
         </div>
 
@@ -124,22 +102,6 @@ export default function AdminDashboard() {
           >
             <h3 className="font-bold text-mosque-green-700 mb-2">Spenden</h3>
             <p className="text-sm text-gray-600">Spendenstand verwalten und aktualisieren</p>
-          </Link>
-
-          <Link
-            href="/admin/veranstaltungen"
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
-          >
-            <h3 className="font-bold text-mosque-green-700 mb-2">Veranstaltungen</h3>
-            <p className="text-sm text-gray-600">Events erstellen und bearbeiten</p>
-          </Link>
-
-          <Link
-            href="/admin/blog"
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
-          >
-            <h3 className="font-bold text-mosque-green-700 mb-2">Blog / News</h3>
-            <p className="text-sm text-gray-600">Neuigkeiten und Updates veröffentlichen</p>
           </Link>
 
           <Link

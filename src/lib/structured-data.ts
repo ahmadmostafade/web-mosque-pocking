@@ -10,7 +10,7 @@ export function getOrganizationSchema() {
     telephone: SITE_CONFIG.contact.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Musterstraße 1",
+      streetAddress: "Passauer Str. 25",
       addressLocality: SITE_CONFIG.location.city,
       postalCode: "94060",
       addressCountry: "DE",
@@ -28,7 +28,7 @@ export function getLocalBusinessSchema() {
     telephone: SITE_CONFIG.contact.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Musterstraße 1",
+      streetAddress: "Passauer Str. 25",
       addressLocality: SITE_CONFIG.location.city,
       postalCode: "94060",
       addressCountry: "DE",
@@ -71,32 +71,5 @@ export function getFaqSchema() {
         },
       },
     ],
-  };
-}
-
-export function getEventSchema(event: {
-  title: string;
-  date: string;
-  description: string;
-}) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: event.title,
-    startDate: event.date,
-    description: event.description,
-    location: {
-      "@type": "Place",
-      name: SITE_CONFIG.name,
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: SITE_CONFIG.location.city,
-        addressCountry: "DE",
-      },
-    },
-    organizer: {
-      "@type": "Organization",
-      name: SITE_CONFIG.bankDetails.accountHolder,
-    },
   };
 }
