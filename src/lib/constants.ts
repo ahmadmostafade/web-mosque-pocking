@@ -29,6 +29,8 @@ export const SITE_CONFIG = {
   legalInfo: {
     legalForm: "Verein e.V.",
     registrationCourt: "Amtsgericht Passau",
+    registrationNumber: "VR 201235",
+    registrationDate: "04.11.2025",
     chairman: "Saad, Hashem",
     viceChairman: "Putta, Luca",
     treasurer: "Aamer, Kazala",
