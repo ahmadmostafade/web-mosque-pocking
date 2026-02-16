@@ -23,7 +23,6 @@ export default function KontaktPage() {
             <div className="space-y-3 text-gray-700">
               <p>📍 {SITE_CONFIG.contact.address}</p>
               <p>📧 {SITE_CONFIG.contact.email}</p>
-              <p>📞 {SITE_CONFIG.contact.phone}</p>
             </div>
           </div>
 

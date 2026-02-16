@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-3">🕌 Moschee Pocking</h3>
+            <h3 className="text-lg font-semibold mb-3">🕌 {SITE_CONFIG.name}</h3>
             <p className="text-sm text-gray-300">
               {SITE_CONFIG.contact.address}
             </p>
@@ -43,7 +43,13 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Spenden</h3>
             <p className="text-sm text-gray-300">
+              {SITE_CONFIG.bankDetails.accountHolder}
+            </p>
+            <p className="text-sm text-gray-300 mt-1">
               IBAN: {SITE_CONFIG.bankDetails.iban}
+            </p>
+            <p className="text-sm text-gray-300">
+              BIC: {SITE_CONFIG.bankDetails.bic}
             </p>
             <p className="text-sm text-gray-300 mt-1">
               Verwendungszweck: {SITE_CONFIG.bankDetails.reference}

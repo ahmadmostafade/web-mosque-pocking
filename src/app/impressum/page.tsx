@@ -23,8 +23,6 @@ export default function ImpressumPage() {
 
         <h2>Kontakt</h2>
         <p>
-          Telefon: {SITE_CONFIG.contact.phone}
-          <br />
           E-Mail: {SITE_CONFIG.contact.email}
         </p>
 

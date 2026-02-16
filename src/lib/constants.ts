@@ -19,8 +19,7 @@ export const SITE_CONFIG = {
     reference: "Moscheekauf",
   },
   contact: {
-    email: "info@moschee-pocking.de",
-    phone: "+49 000 0000000",
+    email: "info@ibf-pocking.de",
     address: "Passauer Str. 25, 94060 Pocking",
   },
   prayerApi: {

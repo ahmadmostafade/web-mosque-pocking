@@ -7,7 +7,6 @@ export function getOrganizationSchema() {
     name: SITE_CONFIG.bankDetails.accountHolder,
     url: SITE_CONFIG.url,
     email: SITE_CONFIG.contact.email,
-    telephone: SITE_CONFIG.contact.phone,
     address: {
       "@type": "PostalAddress",
       streetAddress: "Passauer Str. 25",
@@ -25,7 +24,6 @@ export function getLocalBusinessSchema() {
     name: SITE_CONFIG.name,
     url: SITE_CONFIG.url,
     email: SITE_CONFIG.contact.email,
-    telephone: SITE_CONFIG.contact.phone,
     address: {
       "@type": "PostalAddress",
       streetAddress: "Passauer Str. 25",
