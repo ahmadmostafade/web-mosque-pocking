@@ -17,6 +17,19 @@ export default function Footer() {
           </div>
 
           <div>
+            <h3 className="text-lg font-semibold mb-3">Spenden</h3>
+            <p className="text-sm text-gray-300">
+              IBAN: {SITE_CONFIG.bankDetails.iban}
+            </p>
+            <p className="text-sm text-gray-300">
+              BIC: {SITE_CONFIG.bankDetails.bic}
+            </p>
+            <p className="text-sm text-gray-300 mt-1">
+              Verwendungszweck: {SITE_CONFIG.bankDetails.reference}
+            </p>
+          </div>
+
+          <div>
             <h3 className="text-lg font-semibold mb-3">Links</h3>
             <ul className="space-y-1 text-sm text-gray-300">
               <li>
@@ -38,22 +51,6 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Spenden</h3>
-            <p className="text-sm text-gray-300">
-              {SITE_CONFIG.bankDetails.accountHolder}
-            </p>
-            <p className="text-sm text-gray-300 mt-1">
-              IBAN: {SITE_CONFIG.bankDetails.iban}
-            </p>
-            <p className="text-sm text-gray-300">
-              BIC: {SITE_CONFIG.bankDetails.bic}
-            </p>
-            <p className="text-sm text-gray-300 mt-1">
-              Verwendungszweck: {SITE_CONFIG.bankDetails.reference}
-            </p>
           </div>
         </div>
 
