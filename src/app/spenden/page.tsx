@@ -2,11 +2,10 @@ import { Metadata } from "next";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
-import { calculateDonationProgress } from "@/lib/donations";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
-
-import { calculateTotalBySource } from "@/lib/donation-store";
+import { getDonationGoal } from "@/lib/db-donations";
+import db from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
@@ -14,13 +13,23 @@ export const metadata: Metadata = {
     "Unterstützen Sie den Kauf der Moschee Pocking mit Ihrer Spende.",
 };
 
+// Get manual progress from database
+function getManualProgress() {
+  const stmt = db.prepare("SELECT value FROM settings WHERE key = 'donation_progress'");
+  const row = stmt.get() as { value: string } | undefined;
+  return row ? parseFloat(row.value) : 0;
+}
+
 export default function SpendenPage() {
-  const totals = calculateTotalBySource();
-  const progress = calculateDonationProgress(
-    totals.manual,
-    totals.stripe,
-    totals.adjustment
-  );
+  const currentAmount = getManualProgress();
+  const goalAmount = getDonationGoal();
+  const percentage = Math.min(100, Math.round((currentAmount / goalAmount) * 100));
+
+  const progress = {
+    currentAmount,
+    goalAmount,
+    percentage,
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -29,7 +38,7 @@ export default function SpendenPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqSchema()) }}
       />
       <h1 className="text-3xl font-bold text-mosque-green-700 mb-2">
-        Spenden – Moscheekauf 60.000 €
+        Spenden – Moscheekauf {goalAmount.toLocaleString("de-DE")} €
       </h1>
       <p className="text-gray-600 mb-8">
         Unterstützen Sie uns beim Kauf unserer Moschee. Jede Spende zählt.
@@ -38,6 +47,20 @@ export default function SpendenPage() {
       {/* Progress */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <DonationProgressBar progress={progress} />
+      </div>
+
+      {/* Motivation */}
+      <div className="mb-8 text-center bg-mosque-green-50 rounded-xl p-8">
+        <p className="text-xl text-mosque-green-800 font-arabic mb-3" dir="rtl">
+          مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا
+        </p>
+        <p className="text-gray-600 italic mb-4">
+          Ṣadaqa Jāriya – eine fortlaufende Wohltat, deren Belohnung niemals
+          endet.
+        </p>
+        <p className="text-gray-700">
+          Jede Spende, egal wie klein, bringt uns dem Ziel näher.
+        </p>
       </div>
 
       {/* Transparency */}
@@ -102,20 +125,6 @@ export default function SpendenPage() {
           </h2>
           <DonationForm />
         </div>
-      </div>
-
-      {/* Motivation */}
-      <div className="mt-12 text-center bg-mosque-green-50 rounded-xl p-8">
-        <p className="text-xl text-mosque-green-800 font-arabic mb-3" dir="rtl">
-          مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا
-        </p>
-        <p className="text-gray-600 italic mb-4">
-          Ṣadaqa Jāriya – eine fortlaufende Wohltat, deren Belohnung niemals
-          endet.
-        </p>
-        <p className="text-gray-700">
-          Jede Spende, egal wie klein, bringt uns dem Ziel näher.
-        </p>
       </div>
     </div>
   );

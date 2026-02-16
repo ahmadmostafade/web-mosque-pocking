@@ -5,25 +5,19 @@ import {
   calculateTotalBySource,
   getDonationSettings,
 } from "@/lib/donation-store";
-import { calculateDonationProgress } from "@/lib/donations";
+import { getDonationProgress } from "@/lib/db-donations";
 import { logAction } from "@/lib/audit-log";
 
 export async function GET() {
   const totals = calculateTotalBySource();
   const settings = getDonationSettings();
-  const progress = calculateDonationProgress(
-    totals.manual,
-    totals.stripe,
-    totals.adjustment
-  );
+  const progress = getDonationProgress();
 
   return NextResponse.json({
-    progress: {
-      ...progress,
-      lastUpdated: settings.lastUpdated,
-    },
+    progress,
     totals,
     donations: getDonations(),
+    settings,
   });
 }
 

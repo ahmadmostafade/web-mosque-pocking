@@ -14,6 +14,7 @@ interface DonationData {
   }>;
   total: { manual: number; stripe: number; adjustment: number; total: number };
   settings: { goalAmount: number; manualAdjustment: number };
+  progress: number;
 }
 
 export default function AdminDonationsPage() {
@@ -21,12 +22,17 @@ export default function AdminDonationsPage() {
   const [amount, setAmount] = useState("");
   const [donorName, setDonorName] = useState("");
   const [anonymous, setAnonymous] = useState(false);
+  const [progress, setProgress] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
 
   const loadData = useCallback(async () => {
     const res = await fetch("/api/donations");
-    if (res.ok) setData(await res.json());
+    if (res.ok) {
+      const donationData = await res.json();
+      setData(donationData);
+      setProgress(donationData.progress?.toString() || "0");
+    }
   }, []);
 
   useEffect(() => {
@@ -54,6 +60,21 @@ export default function AdminDonationsPage() {
       setDonorName("");
       setAnonymous(false);
       loadData();
+      setTimeout(() => setMessage(""), 3000);
+    }
+  }
+
+  async function handleUpdateProgress(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await fetch("/api/donations/progress", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ progress: parseFloat(progress) }),
+    });
+    if (res.ok) {
+      setMessage("Spendenstand aktualisiert.");
+      loadData();
+      setTimeout(() => setMessage(""), 3000);
     }
   }
 
@@ -66,10 +87,46 @@ export default function AdminDonationsPage() {
         </button>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        {message && (
+          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm">{message}</div>
+        )}
+
+        {/* Current Progress */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="font-bold text-lg mb-4">Aktueller Spendenstand (Öffentlich)</h2>
+          <form onSubmit={handleUpdateProgress} className="space-y-4">
+            <div>
+              <label htmlFor="progress" className="block text-sm font-medium text-gray-700 mb-1">
+                Aktueller Betrag (€)
+              </label>
+              <input
+                id="progress"
+                type="number"
+                min="0"
+                step="0.01"
+                value={progress}
+                onChange={(e) => setProgress(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Dieser Betrag wird auf der Spendenseite angezeigt
+              </p>
+            </div>
+            <button
+              type="submit"
+              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+            >
+              Spendenstand aktualisieren
+            </button>
+          </form>
+        </div>
+
+        {/* Internal Tracking */}
         {data && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 className="font-bold text-lg mb-2">Aktueller Stand</h2>
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="font-bold text-lg mb-2">Interne Übersicht</h2>
             <p className="text-2xl font-bold text-mosque-green-700">
               {data.total.total.toLocaleString("de-DE")} € / 60.000 €
             </p>
@@ -81,11 +138,9 @@ export default function AdminDonationsPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <h2 className="font-bold text-lg mb-4">Neue Spende eintragen</h2>
-          {message && (
-            <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">{message}</div>
-          )}
+        {/* Add Donation */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="font-bold text-lg mb-4">Neue Spende eintragen (Intern)</h2>
           <form onSubmit={handleAdd} className="space-y-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
@@ -134,11 +189,12 @@ export default function AdminDonationsPage() {
           </form>
         </div>
 
+        {/* Recent Donations */}
         {data && data.donations.length > 0 && (
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="font-bold text-lg mb-4">Letzte Spenden</h2>
             <div className="space-y-2">
-              {data.donations.map((d) => (
+              {data.donations.slice(0, 10).map((d) => (
                 <div key={d.id} className="flex justify-between items-center py-2 border-b last:border-0">
                   <div>
                     <span className="font-medium">{d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}</span>

@@ -8,7 +8,7 @@ export default function DonationForm() {
   const [anonymous, setAnonymous] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const presetAmounts = [10, 25, 50, 100, 250, 500];
+  const presetAmounts = [10, 20, 50];
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

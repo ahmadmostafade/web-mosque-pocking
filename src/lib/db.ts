@@ -109,6 +109,7 @@ function initializeDatabase() {
     const stmt = db.prepare("INSERT INTO settings (key, value) VALUES (?, ?)");
     stmt.run("donation_goal", "60000");
     stmt.run("donation_adjustment", "0");
+    stmt.run("donation_progress", "0");
   }
 
   // Insert default Jummah times

@@ -83,3 +83,24 @@ export function getDonationGoal(): number {
   const row = stmt.get() as { value: string } | undefined;
   return row ? parseFloat(row.value) : 60000;
 }
+
+export function getDonationProgress(): number {
+  const stmt = db.prepare("SELECT value FROM settings WHERE key = 'donation_progress'");
+  const row = stmt.get() as { value: string } | undefined;
+  return row ? parseFloat(row.value) : 0;
+}
+
+export function updateDonationProgress(
+  progress: number,
+  updatedBy: string
+): void {
+  const stmt = db.prepare(`
+    INSERT INTO settings (key, value, updated_by)
+    VALUES ('donation_progress', ?, ?)
+    ON CONFLICT(key) DO UPDATE SET
+      value = excluded.value,
+      updated_at = CURRENT_TIMESTAMP,
+      updated_by = excluded.updated_by
+  `);
+  stmt.run(progress.toString(), updatedBy);
+}
