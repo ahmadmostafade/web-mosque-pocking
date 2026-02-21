@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
+import AyahBanner from "@/components/AyahBanner";
 import { calculateDonationProgress } from "@/lib/donations";
 import { calculateTotalBySource } from "@/lib/donation-store";
 import { fetchPrayerTimes, getNextPrayer } from "@/lib/prayer-times";
@@ -75,25 +76,8 @@ export default async function HomePage() {
 
       {/* Motivation Section */}
       <section className="bg-mosque-green-50 page-section">
-        <div className="page-container-narrow text-center">
-          <p className="text-2xl text-mosque-green-800 font-arabic mb-4" dir="rtl">
-            مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا فَيُضَـٰعِفَهُۥ لَهُۥٓ أَضْعَافًا كَثِيرَةً
-          </p>
-          <p className="text-gray-600 italic mb-6">
-            „Wer ist es, der Allah ein gutes Darlehen gibt, damit Er es ihm
-            vervielfache?" – Sure Al-Baqara, 245
-          </p>
-          <p className="text-gray-700 mb-8">
-            Jede Spende ist eine <strong>Ṣadaqa Jāriya</strong> – eine
-            fortlaufende Wohltat, deren Belohnung auch nach dem Tod weitergeht.
-            Jeder Betrag zählt.
-          </p>
-          <Link
-            href="/spenden"
-            className="inline-block bg-mosque-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-mosque-green-700 transition-colors"
-          >
-            Jetzt spenden
-          </Link>
+        <div className="page-container-narrow">
+          <AyahBanner />
         </div>
       </section>
     </div>

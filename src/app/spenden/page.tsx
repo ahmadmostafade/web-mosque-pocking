@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
+import AyahBanner from "@/components/AyahBanner";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
 import { calculateDonationProgress } from "@/lib/donations";
@@ -40,17 +41,8 @@ export default function SpendenPage() {
       </div>
 
       {/* Motivation */}
-      <div className="mb-8 text-center bg-mosque-green-50 rounded-xl p-8">
-        <p className="text-xl text-mosque-green-800 font-arabic mb-3" dir="rtl">
-          مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا
-        </p>
-        <p className="text-gray-600 italic mb-4">
-          Ṣadaqa Jāriya – eine fortlaufende Wohltat, deren Belohnung niemals
-          endet.
-        </p>
-        <p className="text-gray-700">
-          Jede Spende, egal wie klein, bringt uns dem Ziel näher.
-        </p>
+      <div className="mb-8">
+        <AyahBanner showButton={false} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
