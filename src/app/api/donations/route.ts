@@ -14,8 +14,8 @@ export async function GET() {
   const progress = getDonationProgress();
 
   return NextResponse.json({
-    progress,
-    totals,
+    progress: progress > 0 ? progress : totals.total, // Use progress if set, otherwise use actual total
+    total: totals,
     donations: getDonations(),
     settings,
   });

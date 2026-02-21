@@ -27,13 +27,14 @@ export default function AdminDashboard() {
       const donRes = await fetch("/api/donations");
       const donData = await donRes.json();
 
-      const total = donData.total?.total || 0;
+      const currentAmount = donData.progress || donData.total?.total || 0;
+      const goalAmount = donData.settings?.goalAmount || 60000;
 
       setData({
         donations: {
-          total,
-          goal: 60000,
-          percentage: Math.min(100, Math.round((total / 60000) * 100)),
+          total: currentAmount,
+          goal: goalAmount,
+          percentage: Math.min(100, Math.round((currentAmount / goalAmount) * 100)),
         },
       });
     } catch {

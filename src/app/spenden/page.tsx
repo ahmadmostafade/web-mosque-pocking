@@ -5,8 +5,7 @@ import QrCodeDisplay from "@/components/QrCodeDisplay";
 import AyahBanner from "@/components/AyahBanner";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
-import { calculateDonationProgress } from "@/lib/donations";
-import { calculateTotalBySource } from "@/lib/donation-store";
+import { getDonationProgress, getDonationGoal } from "@/lib/db-donations";
 
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
@@ -15,12 +14,18 @@ export const metadata: Metadata = {
 };
 
 export default function SpendenPage() {
-  const totals = calculateTotalBySource();
-  const progress = calculateDonationProgress(
-    totals.manual,
-    totals.stripe,
-    totals.adjustment
-  );
+  const currentAmount = getDonationProgress();
+  const goalAmount = getDonationGoal();
+  const percentage = Math.min(Math.round((currentAmount / goalAmount) * 100), 100);
+  const remaining = Math.max(goalAmount - currentAmount, 0);
+
+  const progress = {
+    currentAmount,
+    goalAmount,
+    percentage,
+    remaining,
+    lastUpdated: new Date().toISOString(),
+  };
 
   return (
     <div className="page-container-md page-section">

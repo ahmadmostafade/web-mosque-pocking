@@ -2,17 +2,23 @@ import Link from "next/link";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
 import AyahBanner from "@/components/AyahBanner";
-import { calculateDonationProgress } from "@/lib/donations";
-import { calculateTotalBySource } from "@/lib/donation-store";
+import { getDonationProgress, getDonationGoal } from "@/lib/db-donations";
 import { fetchPrayerTimes, getNextPrayer } from "@/lib/prayer-times";
 
 export default async function HomePage() {
-  const totals = calculateTotalBySource();
-  const progress = calculateDonationProgress(
-    totals.manual,
-    totals.stripe,
-    totals.adjustment
-  );
+  const currentAmount = getDonationProgress();
+  const goalAmount = getDonationGoal();
+  const percentage = Math.min(Math.round((currentAmount / goalAmount) * 100), 100);
+  const remaining = Math.max(goalAmount - currentAmount, 0);
+
+  const progress = {
+    currentAmount,
+    goalAmount,
+    percentage,
+    remaining,
+    lastUpdated: new Date().toISOString(),
+  };
+
   const prayerTimes = await fetchPrayerTimes();
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes) : null;
 

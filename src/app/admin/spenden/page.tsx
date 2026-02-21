@@ -30,8 +30,14 @@ export default function AdminDonationsPage() {
     const res = await fetch("/api/donations");
     if (res.ok) {
       const donationData = await res.json();
-      setData(donationData);
-      setProgress(donationData.progress?.toString() || "0");
+      const currentProgress = donationData.progress || donationData.total?.total || 0;
+      setData({
+        donations: donationData.donations || [],
+        total: donationData.total || { manual: 0, stripe: 0, adjustment: 0, total: 0 },
+        settings: donationData.settings || { goalAmount: 60000, manualAdjustment: 0 },
+        progress: currentProgress,
+      });
+      setProgress(currentProgress.toString());
     }
   }, []);
 
