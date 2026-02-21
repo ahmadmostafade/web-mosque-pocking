@@ -87,7 +87,7 @@ export default function AdminDonationsPage() {
         </button>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div className="page-container py-8 space-y-6">
         {message && (
           <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm">{message}</div>
         )}

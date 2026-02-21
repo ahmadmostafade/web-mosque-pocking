@@ -96,7 +96,7 @@ export default function AdminPrayerTimesPage() {
         </button>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div className="page-container-narrow py-8 space-y-6">
         {message && (
           <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm">{message}</div>
         )}

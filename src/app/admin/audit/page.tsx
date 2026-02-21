@@ -40,7 +40,7 @@ export default function AdminAuditPage() {
         </button>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="page-container py-8">
         {entries.length === 0 ? (
           <p className="text-gray-500">Noch keine Einträge vorhanden.</p>
         ) : (

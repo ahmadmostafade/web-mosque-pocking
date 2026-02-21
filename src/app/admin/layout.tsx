@@ -11,5 +11,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminAuthGuard>{children}</AdminAuthGuard>;
+  return (
+    <AdminAuthGuard>
+      <div className="admin-layout">{children}</div>
+    </AdminAuthGuard>
+  );
 }
