@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import DonationProgressBar from "@/components/DonationProgressBar";
+import LiveDonationProgress from "@/components/LiveDonationProgress";
+import RecentDonations from "@/components/RecentDonations";
 import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
 import AyahBanner from "@/components/AyahBanner";
@@ -42,7 +43,7 @@ export default function SpendenPage() {
 
       {/* Progress */}
       <div className="mb-8">
-        <DonationProgressBar progress={progress} title="Spendenfortschritt" />
+        <LiveDonationProgress initialProgress={progress} />
       </div>
 
       {/* Motivation */}
@@ -99,6 +100,9 @@ export default function SpendenPage() {
           <DonationForm />
         </div>
       </div>
+
+      {/* Recent Donations */}
+      <RecentDonations />
 
       {/* Transparency */}
       <div className="bg-mosque-green-50 rounded-xl p-6 mt-8">

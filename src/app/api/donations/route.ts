@@ -5,7 +5,7 @@ import {
   calculateTotalBySource,
   getDonationSettings,
 } from "@/lib/donation-store";
-import { getDonationProgress } from "@/lib/db-donations";
+import { getDonationProgress, updateDonationProgress } from "@/lib/db-donations";
 import { logAction } from "@/lib/audit-log";
 
 export async function GET() {
@@ -40,6 +40,10 @@ export async function POST(request: NextRequest) {
       donorName,
       anonymous: anonymous ?? false,
     });
+
+    // Auto-update the public donation_progress by adding the new amount
+    const currentProgress = getDonationProgress();
+    updateDonationProgress(currentProgress + amount, "admin");
 
     logAction(
       "admin",

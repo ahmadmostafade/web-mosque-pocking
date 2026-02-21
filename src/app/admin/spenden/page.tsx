@@ -65,7 +65,7 @@ export default function AdminDonationsPage() {
       setAmount("");
       setDonorName("");
       setAnonymous(false);
-      loadData();
+      await loadData(); // reload everything including updated progress
       setTimeout(() => setMessage(""), 3000);
     }
   }
@@ -146,7 +146,7 @@ export default function AdminDonationsPage() {
 
         {/* Add Donation */}
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="font-bold text-lg mb-4">Neue Spende eintragen (Intern)</h2>
+          <h2 className="font-bold text-lg mb-4">Neue Spende eintragen</h2>
           <form onSubmit={handleAdd} className="space-y-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
