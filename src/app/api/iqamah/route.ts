@@ -7,6 +7,11 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const session = request.cookies.get("session");
+    if (!session?.value) {
+      return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
+    }
+
     const body = await request.json();
     const updated = updateIqamahTimes(body);
     return NextResponse.json(updated);
