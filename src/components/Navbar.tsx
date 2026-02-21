@@ -26,7 +26,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-mosque-gold-300 transition-colors text-sm font-medium"
+                className="hover:text-mosque-gold-300 transition-all duration-200 text-sm font-medium hover:-translate-y-0.5"
               >
                 {link.label}
               </Link>
@@ -46,8 +46,12 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {isOpen && (
-        <div className="md:hidden bg-mosque-green-800 px-4 pb-4">
+      <div
+        className={`md:hidden bg-mosque-green-800 overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 pt-1">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -59,7 +63,7 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-      )}
+      </div>
     </nav>
   );
 }

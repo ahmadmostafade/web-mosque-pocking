@@ -4,6 +4,7 @@ import RecentDonations from "@/components/RecentDonations";
 import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
 import AyahBanner from "@/components/AyahBanner";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
 import { getDonationProgress, getDonationGoal } from "@/lib/db-donations";
@@ -42,18 +43,19 @@ export default function SpendenPage() {
       </p>
 
       {/* Progress */}
-      <div className="mb-8">
+      <AnimateOnScroll animation="fade-up" className="mb-8">
         <LiveDonationProgress initialProgress={progress} />
-      </div>
+      </AnimateOnScroll>
 
       {/* Motivation */}
-      <div className="mb-8">
+      <AnimateOnScroll animation="fade-in" delay={100} className="mb-8">
         <AyahBanner showButton={false} />
-      </div>
+      </AnimateOnScroll>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Bank Transfer */}
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <AnimateOnScroll animation="fade-left">
+          <div className="bg-white rounded-xl shadow-md p-6 h-full">
           <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
             Banküberweisung
           </h2>
@@ -90,22 +92,28 @@ export default function SpendenPage() {
             </h3>
             <QrCodeDisplay />
           </div>
-        </div>
+          </div>
+        </AnimateOnScroll>
 
         {/* Online Donation */}
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <AnimateOnScroll animation="fade-right" delay={150}>
+          <div className="bg-white rounded-xl shadow-md p-6 h-full">
           <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
             Online spenden
           </h2>
           <DonationForm />
-        </div>
+          </div>
+        </AnimateOnScroll>
       </div>
 
       {/* Recent Donations */}
-      <RecentDonations />
+      <AnimateOnScroll animation="fade-up">
+        <RecentDonations />
+      </AnimateOnScroll>
 
       {/* Transparency */}
-      <div className="bg-mosque-green-50 rounded-xl p-6 mt-8">
+      <AnimateOnScroll animation="fade-up" delay={100}>
+        <div className="bg-mosque-green-50 rounded-xl p-6 mt-8">
         <h2 className="text-xl font-bold text-mosque-green-700 mb-3">
           Transparenz
         </h2>
@@ -116,7 +124,8 @@ export default function SpendenPage() {
           Gelder treuhänderisch und veröffentlicht regelmäßige Updates zum
           Projektfortschritt.
         </p>
-      </div>
+        </div>
+      </AnimateOnScroll>
     </div>
   );
 }

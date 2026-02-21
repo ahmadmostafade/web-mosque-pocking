@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import MediaGallery from "@/components/MediaGallery";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { sampleMedia } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function GaleriePage() {
         Fotos und Videos unserer Moschee – vom Anfang bis heute.
       </p>
 
-      <MediaGallery items={sampleMedia} />
+      <AnimateOnScroll animation="fade-up">
+        <MediaGallery items={sampleMedia} />
+      </AnimateOnScroll>
     </div>
   );
 }

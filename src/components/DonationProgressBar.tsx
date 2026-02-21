@@ -45,10 +45,11 @@ export default function DonationProgressBar({
         aria-label={`Spendenfortschritt: ${progress.percentage}%`}
       >
         <div
-          className="bg-mosque-green-500 h-5 rounded-full transition-all duration-700 flex items-center justify-center text-xs text-white font-bold"
+          className="bg-mosque-green-500 h-5 rounded-full transition-all duration-700 flex items-center justify-center text-xs text-white font-bold relative overflow-hidden"
           style={{ width: `${Math.max(progress.percentage, 3)}%` }}
         >
-          {progress.percentage}%
+          <span className="relative z-10">{progress.percentage}%</span>
+          <div className="absolute inset-0 animate-shimmer" />
         </div>
       </div>
 

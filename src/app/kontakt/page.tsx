@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { SITE_CONFIG } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -15,7 +16,8 @@ export default function KontaktPage() {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
-        <div className="space-y-6">
+        <AnimateOnScroll animation="fade-left">
+          <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
               Kontaktdaten
@@ -37,14 +39,17 @@ export default function KontaktPage() {
               loading="lazy"
             />
           </div>
-        </div>
+          </div>
+        </AnimateOnScroll>
 
-        <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
+        <AnimateOnScroll animation="fade-right" delay={150}>
+          <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
           <h2 className="text-xl font-bold text-mosque-green-700 mb-6">
             Nachricht senden
           </h2>
           <ContactForm />
-        </div>
+          </div>
+        </AnimateOnScroll>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { fetchPrayerTimes, getNextPrayer } from "@/lib/prayer-times";
 import { getIqamahTimes } from "@/lib/iqamah-store";
 import { getJummahTimes } from "@/lib/db-jummah";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 export const metadata: Metadata = {
   title: "Gebetszeiten",
@@ -24,27 +25,29 @@ export default async function GebetszeitenPage() {
         Automatisch berechnete Gebetszeiten und Iqāmah-Zeiten unserer Moschee.
       </p>
 
-      <div className="mb-8">
+      <AnimateOnScroll animation="fade-up" className="mb-8">
         <PrayerTimesCard
           times={prayerTimes}
           nextPrayer={nextPrayer}
           iqamah={iqamah}
           showDate
         />
-      </div>
+      </AnimateOnScroll>
 
       {/* Jummah Card */}
-      <div className="bg-mosque-green-50 rounded-xl p-6 border-2 border-mosque-green-200">
-        <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
-          🕌 Jumuʿah (Freitagsgebet)
-        </h2>
-        <div>
-          <span className="text-sm text-gray-600 font-medium">Khutba</span>
-          <p className="text-3xl font-bold text-mosque-green-700">
-            {jummah.khutba_time}
-          </p>
+      <AnimateOnScroll animation="scale-in" delay={150}>
+        <div className="bg-mosque-green-50 rounded-xl p-6 border-2 border-mosque-green-200">
+          <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
+            🕌 Jumuʿah (Freitagsgebet)
+          </h2>
+          <div>
+            <span className="text-sm text-gray-600 font-medium">Khutba</span>
+            <p className="text-3xl font-bold text-mosque-green-700">
+              {jummah.khutba_time}
+            </p>
+          </div>
         </div>
-      </div>
+      </AnimateOnScroll>
     </div>
   );
 }

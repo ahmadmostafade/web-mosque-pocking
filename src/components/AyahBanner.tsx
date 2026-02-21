@@ -19,7 +19,7 @@ export default function AyahBanner({ showButton = true }: Props) {
       {showButton && (
         <Link
           href="/spenden"
-          className="inline-block bg-mosque-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-mosque-green-700 transition-colors"
+          className="inline-block bg-mosque-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-mosque-green-700 hover:scale-105 transition-all duration-300"
         >
           Jetzt spenden
         </Link>

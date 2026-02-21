@@ -71,10 +71,10 @@ export default function PrayerTimesCard({ times, nextPrayer, iqamah, showDate = 
               return (
                 <tr
                   key={key}
-                  className={`border-b border-gray-50 last:border-0 transition-colors ${
+                  className={`border-b border-gray-50 last:border-0 transition-all duration-200 ${
                     isNext
-                      ? "bg-mosque-green-100 border-l-4 border-l-mosque-green-600"
-                      : "hover:bg-gray-50"
+                      ? "bg-mosque-green-100 border-l-4 border-l-mosque-green-600 shadow-sm"
+                      : "hover:bg-gray-50 hover:translate-x-0.5"
                   }`}
                 >
                   {/* Prayer name */}
