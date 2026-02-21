@@ -22,7 +22,7 @@ export default function SpendenPage() {
   );
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="page-container-md page-section">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqSchema()) }}

@@ -18,18 +18,18 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-mosque-green-700 to-mosque-green-900 text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <section className="bg-gradient-to-br from-mosque-green-700 to-mosque-green-900 text-white py-24 sm:py-32">
+        <div className="page-container text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 max-w-3xl mx-auto">
             🕌 Willkommen bei der Moschee Pocking
           </h1>
-          <p className="text-lg md:text-xl text-mosque-green-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-mosque-green-100 mb-10 max-w-2xl mx-auto">
             Gemeinsam bauen wir ein Haus des Gebets und der Gemeinschaft.
             Unterstützen Sie uns beim Kauf unserer Moschee.
           </p>
           <Link
             href="/spenden"
-            className="inline-block bg-mosque-gold-400 text-mosque-green-900 font-bold px-8 py-4 rounded-xl text-lg hover:bg-mosque-gold-300 transition-colors shadow-lg"
+            className="inline-block bg-mosque-gold-400 text-mosque-green-900 font-bold px-10 py-4 rounded-xl text-lg hover:bg-mosque-gold-300 transition-colors shadow-lg"
           >
             Jetzt spenden – Moschee kaufen
           </Link>
@@ -37,8 +37,8 @@ export default async function HomePage() {
       </section>
 
       {/* Donation Progress */}
-      <section className="max-w-4xl mx-auto px-4 -mt-8">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+      <section className="page-container -mt-10">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
           <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
             Spendenfortschritt
           </h2>
@@ -47,7 +47,7 @@ export default async function HomePage() {
       </section>
 
       {/* Prayer Times + Info */}
-      <section className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="page-container page-section grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
         <div>
           <h2 className="text-2xl font-bold text-mosque-green-700 mb-4">
             Über unsere Moschee
@@ -74,8 +74,8 @@ export default async function HomePage() {
       </section>
 
       {/* Motivation Section */}
-      <section className="bg-mosque-green-50 py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="bg-mosque-green-50 page-section">
+        <div className="page-container-narrow text-center">
           <p className="text-2xl text-mosque-green-800 font-arabic mb-4" dir="rtl">
             مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا فَيُضَـٰعِفَهُۥ لَهُۥٓ أَضْعَافًا كَثِيرَةً
           </p>
