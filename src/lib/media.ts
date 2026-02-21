@@ -2,10 +2,10 @@ export interface MediaItem {
   id: string;
   src: string;
   alt: string;
+  caption?: string;
   category: "vorher" | "nachher" | "veranstaltungen" | "allgemein";
   type: "image" | "video";
-  width?: number;
-  height?: number;
+  thumbnail?: string;
 }
 
 export const MEDIA_CATEGORIES = [
@@ -16,35 +16,66 @@ export const MEDIA_CATEGORIES = [
   { value: "allgemein", label: "Allgemein" },
 ] as const;
 
-// Sample data - in production, from database
 export const sampleMedia: MediaItem[] = [
   {
-    id: "1",
-    src: "/images/moschee-vorher-1.jpg",
-    alt: "Moschee vor der Renovierung",
+    id: "vorher-1",
+    src: "/images/vorher/img-vorher-01.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 1",
+    caption: "Zustand vor der Renovierung",
     category: "vorher",
     type: "image",
   },
   {
-    id: "2",
-    src: "/images/moschee-nachher-1.jpg",
-    alt: "Moschee nach der Reinigung",
-    category: "nachher",
+    id: "vorher-2",
+    src: "/images/vorher/img-vorher-02.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 2",
+    caption: "Zustand vor der Renovierung",
+    category: "vorher",
     type: "image",
   },
   {
-    id: "3",
-    src: "/images/moschee-event-1.jpg",
-    alt: "Gemeinschaftsaktion",
-    category: "veranstaltungen",
+    id: "vorher-3",
+    src: "/images/vorher/img-vorher-03.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 3",
+    caption: "Zustand vor der Renovierung",
+    category: "vorher",
     type: "image",
+  },
+  {
+    id: "vorher-4",
+    src: "/images/vorher/img-vorher-04.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 4",
+    caption: "Zustand vor der Renovierung",
+    category: "vorher",
+    type: "image",
+  },
+  {
+    id: "vorher-5",
+    src: "/images/vorher/img-vorher-05.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 5",
+    caption: "Zustand vor der Renovierung",
+    category: "vorher",
+    type: "image",
+  },
+  {
+    id: "vorher-6",
+    src: "/images/vorher/img-vorher-06.jpg",
+    alt: "Moschee vor der Renovierung – Ansicht 6",
+    caption: "Zustand vor der Renovierung",
+    category: "vorher",
+    type: "image",
+  },
+  {
+    id: "vorher-vid-1",
+    src: "/images/vorher/vid-vorher-01.mp4",
+    alt: "Moschee vor der Renovierung – Video",
+    caption: "Videodokumentation vor der Renovierung",
+    category: "vorher",
+    type: "video",
   },
 ];
 
-export function filterMedia(
-  items: MediaItem[],
-  category: string
-): MediaItem[] {
+export function filterMedia(items: MediaItem[], category: string): MediaItem[] {
   if (category === "alle") return items;
   return items.filter((item) => item.category === category);
 }
