@@ -36,8 +36,8 @@ export default function SpendenPage() {
       </p>
 
       {/* Progress */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <DonationProgressBar progress={progress} />
+      <div className="mb-8">
+        <DonationProgressBar progress={progress} title="Spendenfortschritt" />
       </div>
 
       {/* Motivation */}

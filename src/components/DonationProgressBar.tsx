@@ -2,33 +2,33 @@ import { formatCurrency, DonationProgress } from "@/lib/donations";
 
 interface Props {
   progress: DonationProgress;
+  title?: string;
   showDetails?: boolean;
 }
 
 export default function DonationProgressBar({
   progress,
+  title,
   showDetails = true,
 }: Props) {
-  // Handle invalid or missing lastUpdated date
   const getDisplayDate = () => {
     try {
       const date = new Date(progress.lastUpdated);
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        // Return today's date if invalid
-        return new Date().toLocaleDateString("de-DE");
-      }
+      if (isNaN(date.getTime())) return new Date().toLocaleDateString("de-DE");
       return date.toLocaleDateString("de-DE");
     } catch {
-      // Return today's date if parsing fails
       return new Date().toLocaleDateString("de-DE");
     }
   };
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between text-sm mb-1">
-        <span className="font-semibold text-mosque-green-700">
+    <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 w-full">
+      {title && (
+        <h2 className="text-xl font-bold text-mosque-green-700 mb-5">{title}</h2>
+      )}
+
+      <div className="flex justify-between items-baseline text-sm mb-2">
+        <span className="font-semibold text-mosque-green-700 text-base">
           {formatCurrency(progress.currentAmount)}
         </span>
         <span className="text-gray-500">
@@ -53,7 +53,7 @@ export default function DonationProgressBar({
       </div>
 
       {showDetails && (
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <div className="flex justify-between text-xs text-gray-500 mt-3">
           <span>Noch {formatCurrency(progress.remaining)} benötigt</span>
           <span>Aktualisiert: {getDisplayDate()}</span>
         </div>
