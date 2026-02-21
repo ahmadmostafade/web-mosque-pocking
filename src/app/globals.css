@@ -32,24 +32,75 @@
   }
 }
 
-@layer utilities {
-  /* Wide container: gallery, homepage sections, footer — generous desktop padding */
-  .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16;
-  }
+/* Wide container: gallery, homepage, navbar, footer */
+.page-container {
+  max-width: 80rem; /* 1280px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 
-  /* Narrow container: legal, forms, single-column text pages */
-  .page-container-narrow {
-    @apply max-w-3xl mx-auto px-4 sm:px-8 lg:px-12;
-  }
+/* Narrow container: legal, single-column text pages */
+.page-container-narrow {
+  max-width: 48rem; /* 768px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 
-  /* Medium container: spenden, kontakt, 2-col pages */
+/* Medium container: spenden, kontakt, 2-col pages */
+.page-container-md {
+  max-width: 64rem; /* 1024px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Standard vertical page padding */
+.page-section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .page-container,
+  .page-container-narrow,
   .page-container-md {
-    @apply max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
-  /* Standard vertical page padding */
   .page-section {
-    @apply py-12 sm:py-16 lg:py-20;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container,
+  .page-container-md {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .page-container-narrow {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .page-section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .page-container,
+  .page-container-md {
+    padding-left: 4rem;
+    padding-right: 4rem;
   }
 }
