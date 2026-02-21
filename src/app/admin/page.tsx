@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import DonationProgressBar from "@/components/DonationProgressBar";
 
 interface DashboardData {
   donations: { total: number; goal: number; percentage: number };
@@ -83,14 +84,40 @@ export default function AdminDashboard() {
       <div className="page-container py-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Übersicht</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Spendenstand</h3>
-            <p className="text-3xl font-bold text-mosque-green-700">
+        {/* Progress Bar */}
+        {data && (
+          <div className="mb-6">
+            <DonationProgressBar
+              progress={{
+                currentAmount: data.donations.total,
+                goalAmount: data.donations.goal,
+                percentage: data.donations.percentage,
+                remaining: Math.max(data.donations.goal - data.donations.total, 0),
+                lastUpdated: new Date().toISOString(),
+              }}
+              title="Spendenfortschritt"
+            />
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-5">
+            <p className="text-xs text-gray-500 mb-1">Gesammelt</p>
+            <p className="text-2xl font-bold text-mosque-green-700">
               {data?.donations.total.toLocaleString("de-DE")} €
             </p>
-            <p className="text-sm text-gray-500 mt-1">
-              {data?.donations.percentage}% von 60.000 €
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-5">
+            <p className="text-xs text-gray-500 mb-1">Ziel</p>
+            <p className="text-2xl font-bold text-gray-700">
+              {data?.donations.goal.toLocaleString("de-DE")} €
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-5 col-span-2 md:col-span-1">
+            <p className="text-xs text-gray-500 mb-1">Fortschritt</p>
+            <p className="text-2xl font-bold text-mosque-green-700">
+              {data?.donations.percentage} %
             </p>
           </div>
         </div>

@@ -2,16 +2,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import DonationProgressBar from "@/components/DonationProgressBar";
+
+interface Donation {
+  id: string;
+  amount: number;
+  source: string;
+  date: string;
+  donorName?: string;
+  anonymous: boolean;
+}
 
 interface DonationData {
-  donations: Array<{
-    id: string;
-    amount: number;
-    source: string;
-    date: string;
-    donorName?: string;
-    anonymous: boolean;
-  }>;
+  donations: Donation[];
   total: { manual: number; stripe: number; adjustment: number; total: number };
   settings: { goalAmount: number; manualAdjustment: number };
   progress: number;
@@ -22,22 +25,27 @@ export default function AdminDonationsPage() {
   const [amount, setAmount] = useState("");
   const [donorName, setDonorName] = useState("");
   const [anonymous, setAnonymous] = useState(false);
-  const [progress, setProgress] = useState("");
-  const [message, setMessage] = useState("");
+  const [initialBetrag, setInitialBetrag] = useState("");
+  const [isInitialSet, setIsInitialSet] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" }>({ text: "", type: "success" });
   const router = useRouter();
 
   const loadData = useCallback(async () => {
     const res = await fetch("/api/donations");
     if (res.ok) {
-      const donationData = await res.json();
-      const currentProgress = donationData.progress || donationData.total?.total || 0;
+      const d = await res.json();
+      const currentProgress = d.progress || 0;
       setData({
-        donations: donationData.donations || [],
-        total: donationData.total || { manual: 0, stripe: 0, adjustment: 0, total: 0 },
-        settings: donationData.settings || { goalAmount: 60000, manualAdjustment: 0 },
+        donations: d.donations || [],
+        total: d.total || { manual: 0, stripe: 0, adjustment: 0, total: 0 },
+        settings: d.settings || { goalAmount: 60000, manualAdjustment: 0 },
         progress: currentProgress,
       });
-      setProgress(currentProgress.toString());
+      // If progress > 0, it has been set — lock the initial field
+      if (currentProgress > 0) {
+        setIsInitialSet(true);
+        setInitialBetrag(currentProgress.toString());
+      }
     }
   }, []);
 
@@ -47,6 +55,29 @@ export default function AdminDonationsPage() {
       else loadData();
     });
   }, [router, loadData]);
+
+  function showMessage(text: string, type: "success" | "error" = "success") {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: "", type: "success" }), 4000);
+  }
+
+  async function handleSetInitial(e: React.FormEvent) {
+    e.preventDefault();
+    const value = parseFloat(initialBetrag);
+    if (isNaN(value) || value < 0) return;
+    const res = await fetch("/api/donations/progress", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ progress: value }),
+    });
+    if (res.ok) {
+      setIsInitialSet(true);
+      await loadData();
+      showMessage("Anfangsbetrag gesetzt. Ab jetzt nur noch über neue Spenden erhöhbar.");
+    } else {
+      showMessage("Fehler beim Speichern.", "error");
+    }
+  }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -61,28 +92,28 @@ export default function AdminDonationsPage() {
       }),
     });
     if (res.ok) {
-      setMessage("Spende erfolgreich hinzugefügt.");
       setAmount("");
       setDonorName("");
       setAnonymous(false);
-      await loadData(); // reload everything including updated progress
-      setTimeout(() => setMessage(""), 3000);
+      await loadData();
+      showMessage("Spende erfolgreich eingetragen.");
+    } else {
+      showMessage("Fehler beim Eintragen.", "error");
     }
   }
 
-  async function handleUpdateProgress(e: React.FormEvent) {
-    e.preventDefault();
-    const res = await fetch("/api/donations/progress", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ progress: parseFloat(progress) }),
-    });
-    if (res.ok) {
-      setMessage("Spendenstand aktualisiert.");
-      loadData();
-      setTimeout(() => setMessage(""), 3000);
-    }
-  }
+  const progress = data
+    ? {
+        currentAmount: data.progress,
+        goalAmount: data.settings.goalAmount,
+        percentage: Math.min(Math.round((data.progress / data.settings.goalAmount) * 100), 100),
+        remaining: Math.max(data.settings.goalAmount - data.progress, 0),
+        lastUpdated: new Date().toISOString(),
+      }
+    : null;
+
+  const donationCount = data?.donations.length || 0;
+  const latestDonation = data?.donations[0];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,55 +125,82 @@ export default function AdminDonationsPage() {
       </nav>
 
       <div className="page-container py-8 space-y-6">
-        {message && (
-          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm">{message}</div>
-        )}
-
-        {/* Current Progress */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="font-bold text-lg mb-4">Aktueller Spendenstand (Öffentlich)</h2>
-          <form onSubmit={handleUpdateProgress} className="space-y-4">
-            <div>
-              <label htmlFor="progress" className="block text-sm font-medium text-gray-700 mb-1">
-                Aktueller Betrag (€)
-              </label>
-              <input
-                id="progress"
-                type="number"
-                min="0"
-                step="0.01"
-                value={progress}
-                onChange={(e) => setProgress(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Dieser Betrag wird auf der Spendenseite angezeigt
-              </p>
-            </div>
-            <button
-              type="submit"
-              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
-            >
-              Spendenstand aktualisieren
-            </button>
-          </form>
-        </div>
-
-        {/* Internal Tracking */}
-        {data && (
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="font-bold text-lg mb-2">Interne Übersicht</h2>
-            <p className="text-2xl font-bold text-mosque-green-700">
-              {data.total.total.toLocaleString("de-DE")} € / 60.000 €
-            </p>
-            <p className="text-sm text-gray-500">
-              Manuell: {data.total.manual.toLocaleString("de-DE")} € | Stripe:{" "}
-              {data.total.stripe.toLocaleString("de-DE")} € | Anpassung:{" "}
-              {data.total.adjustment.toLocaleString("de-DE")} €
-            </p>
+        {message.text && (
+          <div className={`p-3 rounded-lg text-sm ${message.type === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
+            {message.text}
           </div>
         )}
+
+        {/* Progress Bar */}
+        {progress && (
+          <DonationProgressBar progress={progress} title="Spendenfortschritt" />
+        )}
+
+        {/* Stats Row */}
+        {data && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-xl shadow-sm p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">Gesamtbetrag</p>
+              <p className="text-xl font-bold text-mosque-green-700">{data.progress.toLocaleString("de-DE")} €</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">Ziel</p>
+              <p className="text-xl font-bold text-gray-700">{data.settings.goalAmount.toLocaleString("de-DE")} €</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">Anzahl Spenden</p>
+              <p className="text-xl font-bold text-gray-700">{donationCount}</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 text-center">
+              <p className="text-xs text-gray-500 mb-1">Letzte Spende</p>
+              <p className="text-xl font-bold text-mosque-green-700">
+                {latestDonation ? `${latestDonation.amount.toLocaleString("de-DE")} €` : "–"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Initial Betrag — readonly once set */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="font-bold text-lg mb-1">Anfangsbetrag</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            {isInitialSet
+              ? "Dieser Betrag wurde bereits gesetzt und kann nicht mehr geändert werden. Neue Spenden erhöhen den Stand automatisch."
+              : "Setzen Sie den Startbetrag einmalig. Danach ist er gesperrt."}
+          </p>
+          {isInitialSet ? (
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold text-mosque-green-700">
+                {parseFloat(initialBetrag).toLocaleString("de-DE")} €
+              </span>
+              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">gesperrt</span>
+            </div>
+          ) : (
+            <form onSubmit={handleSetInitial} className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label htmlFor="initialBetrag" className="block text-sm font-medium text-gray-700 mb-1">
+                  Betrag (€)
+                </label>
+                <input
+                  id="initialBetrag"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={initialBetrag}
+                  onChange={(e) => setInitialBetrag(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+              >
+                Einmalig setzen
+              </button>
+            </form>
+          )}
+        </div>
 
         {/* Add Donation */}
         <div className="bg-white rounded-xl shadow-md p-6">
@@ -200,11 +258,14 @@ export default function AdminDonationsPage() {
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="font-bold text-lg mb-4">Letzte Spenden</h2>
             <div className="space-y-2">
-              {data.donations.slice(0, 10).map((d) => (
+              {data.donations.slice(0, 15).map((d) => (
                 <div key={d.id} className="flex justify-between items-center py-2 border-b last:border-0">
                   <div>
-                    <span className="font-medium">{d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}</span>
-                    <span className="text-sm text-gray-500 ml-2">{d.date}</span>
+                    <span className="font-medium text-gray-800">
+                      {d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}
+                    </span>
+                    <span className="text-xs text-gray-400 ml-2">{d.date}</span>
+                    <span className="text-xs text-gray-400 ml-2 capitalize">{d.source}</span>
                   </div>
                   <span className="font-bold text-mosque-green-700">{d.amount.toLocaleString("de-DE")} €</span>
                 </div>
