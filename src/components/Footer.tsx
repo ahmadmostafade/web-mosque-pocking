@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-mosque-green-800 text-white py-14 sm:py-16">
       <div className="page-container">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr] gap-10 lg:gap-16">
           <div>
             <h3 className="text-lg font-semibold mb-3">🕌 {SITE_CONFIG.name}</h3>
             <p className="text-sm text-gray-300">

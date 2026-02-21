@@ -9,14 +9,14 @@ export const metadata: Metadata = {
 
 export default function KontaktPage() {
   return (
-    <div className="page-container-narrow page-section">
-      <h1 className="text-3xl font-bold text-mosque-green-700 mb-8">
+    <div className="page-container-md page-section">
+      <h1 className="text-3xl font-bold text-mosque-green-700 mb-10">
         Kontakt
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
               Kontaktdaten
             </h2>
@@ -32,15 +32,15 @@ export default function KontaktPage() {
               title="Standort der Moschee Pocking"
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${SITE_CONFIG.location.longitude - 0.01}%2C${SITE_CONFIG.location.latitude - 0.01}%2C${SITE_CONFIG.location.longitude + 0.01}%2C${SITE_CONFIG.location.latitude + 0.01}&layer=mapnik&marker=${SITE_CONFIG.location.latitude}%2C${SITE_CONFIG.location.longitude}`}
               width="100%"
-              height="300"
-              className="border-0"
+              height="340"
+              className="border-0 block"
               loading="lazy"
             />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
+        <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
+          <h2 className="text-xl font-bold text-mosque-green-700 mb-6">
             Nachricht senden
           </h2>
           <ContactForm />

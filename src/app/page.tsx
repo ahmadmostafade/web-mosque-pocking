@@ -38,7 +38,7 @@ export default async function HomePage() {
 
       {/* Donation Progress */}
       <section className="page-container -mt-10">
-        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8">
           <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
             Spendenfortschritt
           </h2>
