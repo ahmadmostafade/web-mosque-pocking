@@ -119,28 +119,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-5">
-            <p className="text-xs text-gray-500 mb-1">Gesammelt</p>
-            <p className="text-2xl font-bold text-mosque-green-700">
-              {data?.donations.total.toLocaleString("de-DE")} €
-            </p>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-5">
-            <p className="text-xs text-gray-500 mb-1">Ziel</p>
-            <p className="text-2xl font-bold text-gray-700">
-              {data?.donations.goal.toLocaleString("de-DE")} €
-            </p>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-5 col-span-2 md:col-span-1">
-            <p className="text-xs text-gray-500 mb-1">Fortschritt</p>
-            <p className="text-2xl font-bold text-mosque-green-700">
-              {data?.donations.percentage} %
-            </p>
-          </div>
-        </div>
-
         <h2 className="text-xl font-bold text-gray-800 mb-4">Verwaltung</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link

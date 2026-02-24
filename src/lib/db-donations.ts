@@ -104,3 +104,18 @@ export function updateDonationProgress(
   `);
   stmt.run(progress.toString(), updatedBy);
 }
+
+export function clearAllDonations(): void {
+  db.prepare("DELETE FROM donations").run();
+}
+
+export function resetDonationProgress(updatedBy: string): void {
+  db.prepare(`
+    INSERT INTO settings (key, value, updated_by)
+    VALUES ('donation_progress', '0', ?)
+    ON CONFLICT(key) DO UPDATE SET
+      value = '0',
+      updated_at = CURRENT_TIMESTAMP,
+      updated_by = excluded.updated_by
+  `).run(updatedBy);
+}

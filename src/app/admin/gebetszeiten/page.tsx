@@ -36,10 +36,9 @@ export default function AdminPrayerTimesPage() {
     const res = await fetch("/api/iqamah");
     if (res.ok) {
       const data = await res.json();
-      setTimes(data.times);
-      const { lastUpdated, Jummah, ...rest } = data.times;
+      setTimes(data);
+      const { lastUpdated, ...rest } = data;
       void lastUpdated;
-      void Jummah;
       setForm(rest);
     }
 

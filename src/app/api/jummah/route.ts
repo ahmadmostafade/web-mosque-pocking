@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateSession } from "@/lib/auth";
 import { getJummahTimes, updateJummahTimes } from "@/lib/db-jummah";
 
 export async function GET() {
@@ -18,8 +19,8 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = request.cookies.get("session");
-    if (!session?.value) {
+    const sessionId = request.cookies.get("session")?.value;
+    if (!sessionId || !validateSession(sessionId)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

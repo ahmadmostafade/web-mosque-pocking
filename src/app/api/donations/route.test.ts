@@ -1,5 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Mock auth so tests can pass session validation
+vi.mock("@/lib/auth", () => ({
+  validateSession: vi.fn((id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
+  isRateLimited: vi.fn(() => false),
+  authenticate: vi.fn(),
+  logout: vi.fn(),
+  resetAuthStore: vi.fn(),
+}));
+
 // Mock db-donations so tests don't touch the real SQLite DB
 vi.mock("@/lib/db-donations", () => {
   let donations: Array<{ id: number; amount: number; source: string; anonymous: boolean; donor_name: string | null; created_at: string; updated_by: string | null }> = [];
@@ -55,7 +64,7 @@ describe("GET /api/donations", () => {
     const req = new NextRequest("http://localhost:3000/api/donations", {
       method: "POST",
       body: JSON.stringify({ amount: 1000, source: "manual", anonymous: false }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: "session=test-session-id" },
     });
     await POST(req);
 
@@ -73,7 +82,7 @@ describe("POST /api/donations", () => {
     const req = new NextRequest("http://localhost:3000/api/donations", {
       method: "POST",
       body: JSON.stringify({ amount: 500, source: "manual", anonymous: false }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: "session=test-session-id" },
     });
 
     const res = await POST(req);
@@ -87,7 +96,7 @@ describe("POST /api/donations", () => {
     const req = new NextRequest("http://localhost:3000/api/donations", {
       method: "POST",
       body: JSON.stringify({ source: "manual" }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: "session=test-session-id" },
     });
 
     const res = await POST(req);
@@ -98,7 +107,7 @@ describe("POST /api/donations", () => {
     const req = new NextRequest("http://localhost:3000/api/donations", {
       method: "POST",
       body: JSON.stringify({ amount: 0, source: "manual" }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: "session=test-session-id" },
     });
 
     const res = await POST(req);
@@ -109,7 +118,7 @@ describe("POST /api/donations", () => {
     const req = new NextRequest("http://localhost:3000/api/donations", {
       method: "POST",
       body: JSON.stringify({ amount: 250, anonymous: true }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: "session=test-session-id" },
     });
 
     const res = await POST(req);

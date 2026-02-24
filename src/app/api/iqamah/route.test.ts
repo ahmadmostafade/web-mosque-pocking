@@ -1,7 +1,17 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { GET, PUT } from "./route";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { resetIqamahStore } from "@/lib/iqamah-store";
+
+// Mock auth so tests can pass session validation
+vi.mock("@/lib/auth", () => ({
+  validateSession: vi.fn((id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
+  isRateLimited: vi.fn(() => false),
+  authenticate: vi.fn(),
+  logout: vi.fn(),
+  resetAuthStore: vi.fn(),
+}));
+
+import { GET, PUT } from "./route";
 
 describe("Iqamah API", () => {
   beforeEach(() => {

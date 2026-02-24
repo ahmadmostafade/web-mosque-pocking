@@ -26,7 +26,6 @@ export default function AdminDonationsPage() {
   const [donorName, setDonorName] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [initialBetrag, setInitialBetrag] = useState("");
-  const [isInitialSet, setIsInitialSet] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" }>({ text: "", type: "success" });
   const router = useRouter();
 
@@ -41,11 +40,7 @@ export default function AdminDonationsPage() {
         settings: d.settings || { goalAmount: 60000, manualAdjustment: 0 },
         progress: currentProgress,
       });
-      // If progress > 0, it has been set — lock the initial field
-      if (currentProgress > 0) {
-        setIsInitialSet(true);
-        setInitialBetrag(currentProgress.toString());
-      }
+      setInitialBetrag(currentProgress.toString());
     }
   }, []);
 
@@ -71,11 +66,21 @@ export default function AdminDonationsPage() {
       body: JSON.stringify({ progress: value }),
     });
     if (res.ok) {
-      setIsInitialSet(true);
       await loadData();
-      showMessage("Anfangsbetrag gesetzt. Ab jetzt nur noch über neue Spenden erhöhbar.");
+      showMessage("Anfangsbetrag gespeichert.");
     } else {
       showMessage("Fehler beim Speichern.", "error");
+    }
+  }
+
+  async function handleResetDonations() {
+    if (!confirm("Alle Spenden löschen und Betrag auf 0 zurücksetzen?")) return;
+    const res = await fetch("/api/donations/reset", { method: "POST" });
+    if (res.ok) {
+      await loadData();
+      showMessage("Spendenliste geleert und Betrag zurückgesetzt.");
+    } else {
+      showMessage("Fehler beim Zurücksetzen.", "error");
     }
   }
 
@@ -160,46 +165,35 @@ export default function AdminDonationsPage() {
           </div>
         )}
 
-        {/* Initial Betrag — readonly once set */}
+        {/* Initial Betrag */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="font-bold text-lg mb-1">Anfangsbetrag</h2>
           <p className="text-sm text-gray-500 mb-4">
-            {isInitialSet
-              ? "Dieser Betrag wurde bereits gesetzt und kann nicht mehr geändert werden. Neue Spenden erhöhen den Stand automatisch."
-              : "Setzen Sie den Startbetrag einmalig. Danach ist er gesperrt."}
+            Setzen Sie den aktuellen Spendenstand manuell. Neue Spenden werden darauf addiert.
           </p>
-          {isInitialSet ? (
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-mosque-green-700">
-                {parseFloat(initialBetrag).toLocaleString("de-DE")} €
-              </span>
-              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">gesperrt</span>
+          <form onSubmit={handleSetInitial} className="flex gap-3 items-end">
+            <div className="flex-1">
+              <label htmlFor="initialBetrag" className="block text-sm font-medium text-gray-700 mb-1">
+                Betrag (€)
+              </label>
+              <input
+                id="initialBetrag"
+                type="number"
+                min="0"
+                step="0.01"
+                value={initialBetrag}
+                onChange={(e) => setInitialBetrag(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                required
+              />
             </div>
-          ) : (
-            <form onSubmit={handleSetInitial} className="flex gap-3 items-end">
-              <div className="flex-1">
-                <label htmlFor="initialBetrag" className="block text-sm font-medium text-gray-700 mb-1">
-                  Betrag (€)
-                </label>
-                <input
-                  id="initialBetrag"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={initialBetrag}
-                  onChange={(e) => setInitialBetrag(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
-              >
-                Einmalig setzen
-              </button>
-            </form>
-          )}
+            <button
+              type="submit"
+              className="bg-mosque-green-600 text-white px-6 py-2 rounded-lg hover:bg-mosque-green-700 transition-colors"
+            >
+              Speichern
+            </button>
+          </form>
         </div>
 
         {/* Add Donation */}
@@ -254,23 +248,35 @@ export default function AdminDonationsPage() {
         </div>
 
         {/* Recent Donations */}
-        {data && data.donations.length > 0 && (
+        {data && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="font-bold text-lg mb-4">Letzte Spenden</h2>
-            <div className="space-y-2">
-              {data.donations.slice(0, 15).map((d) => (
-                <div key={d.id} className="flex justify-between items-center py-2 border-b last:border-0">
-                  <div>
-                    <span className="font-medium text-gray-800">
-                      {d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}
-                    </span>
-                    <span className="text-xs text-gray-400 ml-2">{d.date}</span>
-                    <span className="text-xs text-gray-400 ml-2 capitalize">{d.source}</span>
-                  </div>
-                  <span className="font-bold text-mosque-green-700">{d.amount.toLocaleString("de-DE")} €</span>
-                </div>
-              ))}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-bold text-lg">Letzte Spenden</h2>
+              <button
+                onClick={handleResetDonations}
+                className="text-sm text-red-600 border border-red-300 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                Liste leeren &amp; zurücksetzen
+              </button>
             </div>
+            {data.donations.length === 0 ? (
+              <p className="text-sm text-gray-400">Keine Spenden vorhanden.</p>
+            ) : (
+              <div className="space-y-2">
+                {data.donations.slice(0, 15).map((d) => (
+                  <div key={d.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                    <div>
+                      <span className="font-medium text-gray-800">
+                        {d.anonymous ? "Anonym" : d.donorName || "Unbekannt"}
+                      </span>
+                      <span className="text-xs text-gray-400 ml-2">{d.date}</span>
+                      <span className="text-xs text-gray-400 ml-2 capitalize">{d.source}</span>
+                    </div>
+                    <span className="font-bold text-mosque-green-700">{d.amount.toLocaleString("de-DE")} €</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

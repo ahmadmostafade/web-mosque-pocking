@@ -6,6 +6,7 @@ import {
   getDonationSettings,
 } from "@/lib/donation-store";
 import { getDonationProgress, updateDonationProgress } from "@/lib/db-donations";
+import { validateSession } from "@/lib/auth";
 
 export async function GET() {
   const totals = calculateTotalBySource();
@@ -22,6 +23,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const sessionId = request.cookies.get("session")?.value;
+    if (!sessionId || !validateSession(sessionId)) {
+      return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
+    }
+
     const body = await request.json();
     const { amount, source, donorName, anonymous } = body;
 
