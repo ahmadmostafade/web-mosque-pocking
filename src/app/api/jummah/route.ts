@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJummahTimes, updateJummahTimes } from "@/lib/db-jummah";
-import { logAction } from "@/lib/audit-log";
 
 export async function GET() {
   try {
@@ -35,7 +34,6 @@ export async function PUT(request: NextRequest) {
     }
 
     updateJummahTimes(khutba, "admin");
-    logAction("admin", "update", "jummah", `Khutba: ${khutba}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

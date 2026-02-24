@@ -15,9 +15,19 @@ export interface Session {
 
 const SESSION_DURATION = 60 * 60 * 1000; // 1 hour
 
-let sessions: Map<string, Session> = new Map();
-let loginAttempts: Map<string, { count: number; lastAttempt: number }> =
-  new Map();
+// Persist across HMR reloads in dev by attaching to global
+declare global {
+  // eslint-disable-next-line no-var
+  var __sessions: Map<string, Session> | undefined;
+  // eslint-disable-next-line no-var
+  var __loginAttempts: Map<string, { count: number; lastAttempt: number }> | undefined;
+}
+
+if (!global.__sessions) global.__sessions = new Map();
+if (!global.__loginAttempts) global.__loginAttempts = new Map();
+
+let sessions = global.__sessions;
+let loginAttempts = global.__loginAttempts;
 
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
@@ -80,6 +90,6 @@ export function logout(sessionId: string): boolean {
 }
 
 export function resetAuthStore(): void {
-  sessions = new Map();
-  loginAttempts = new Map();
+  sessions = global.__sessions = new Map();
+  loginAttempts = global.__loginAttempts = new Map();
 }

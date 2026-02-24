@@ -64,15 +64,6 @@ function initializeDatabase() {
       updated_by TEXT
     );
 
-    -- Audit log table
-    CREATE TABLE IF NOT EXISTS audit_log (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL,
-      action TEXT NOT NULL,
-      resource TEXT NOT NULL,
-      details TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
   `);
 
   // Insert default admin user — password comes from env, never hardcoded

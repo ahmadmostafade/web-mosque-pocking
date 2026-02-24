@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateSession } from "@/lib/auth";
 import { getHomeLayout, setHomeLayout, HomeLayout } from "@/lib/db-settings";
-import { logAction } from "@/lib/audit-log";
 
 export async function GET() {
   return NextResponse.json({ layout: getHomeLayout() });
@@ -20,7 +19,6 @@ export async function POST(request: NextRequest) {
   }
 
   setHomeLayout(layout as HomeLayout, session.username);
-  logAction(session.username, "update", "home_layout", `Layout auf ${layout} gesetzt`);
 
   return NextResponse.json({ layout });
 }

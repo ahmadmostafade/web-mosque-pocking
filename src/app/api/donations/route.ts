@@ -6,7 +6,6 @@ import {
   getDonationSettings,
 } from "@/lib/donation-store";
 import { getDonationProgress, updateDonationProgress } from "@/lib/db-donations";
-import { logAction } from "@/lib/audit-log";
 
 export async function GET() {
   const totals = calculateTotalBySource();
@@ -44,13 +43,6 @@ export async function POST(request: NextRequest) {
     // Auto-update the public donation_progress by adding the new amount
     const currentProgress = getDonationProgress();
     updateDonationProgress(currentProgress + amount, "admin");
-
-    logAction(
-      "admin",
-      "create",
-      "donation",
-      `Spende: ${amount}€ (${anonymous ? "anonym" : donorName || "unbekannt"})`
-    );
 
     return NextResponse.json({ donation }, { status: 201 });
   } catch {

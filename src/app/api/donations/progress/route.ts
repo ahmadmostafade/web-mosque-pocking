@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateDonationProgress } from "@/lib/db-donations";
-import { logAction } from "@/lib/audit-log";
 
 export async function PUT(request: NextRequest) {
   try {
@@ -20,7 +19,6 @@ export async function PUT(request: NextRequest) {
     }
 
     updateDonationProgress(progress, "admin");
-    logAction("admin", "update", "donation_progress", `${progress}€`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
