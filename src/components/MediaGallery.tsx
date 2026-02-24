@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MediaItem, MEDIA_CATEGORIES, filterMedia } from "@/lib/media";
+import { MediaItem, filterMedia } from "@/lib/media";
+
+type Category = { value: string; label: string };
 
 interface Props {
   items: MediaItem[];
+  categories: Category[];
 }
 
-export default function MediaGallery({ items }: Props) {
+export default function MediaGallery({ items, categories }: Props) {
   const [activeCategory, setActiveCategory] = useState("alle");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -41,7 +44,7 @@ export default function MediaGallery({ items }: Props) {
     <div>
       {/* Category Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
-        {MEDIA_CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat.value}
             onClick={() => setActiveCategory(cat.value)}
