@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { NAV_LINKS } from "@/lib/constants";
 import { HiMenu, HiX } from "react-icons/hi";
 
@@ -16,8 +17,16 @@ export default function Navbar() {
     >
       <div className="page-container">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold tracking-wide">
-            🕌 IBF Pocking
+          <Link href="/" className="flex items-center gap-2.5">
+            <Image
+              src="/images/logo.png"
+              alt="IBF Pocking Logo"
+              width={38}
+              height={38}
+              className="rounded-md"
+              priority
+            />
+            <span className="text-xl font-bold tracking-wide">IBF Pocking</span>
           </Link>
 
           {/* Desktop nav */}

@@ -20,7 +20,8 @@ export const SITE_CONFIG = {
   },
   contact: {
     email: "info@ibf-pocking.de",
-    address: "Passauer Str. 25, 94060 Pocking",
+    address: "Tettenweiser Str. 16, 94060 Pocking",
+    legalRepAddress: "Passauer Str. 25, 94060 Pocking",
   },
   prayerApi: {
     baseUrl: "https://api.aladhan.com/v1",

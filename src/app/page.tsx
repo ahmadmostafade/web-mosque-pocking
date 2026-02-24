@@ -36,8 +36,18 @@ export default async function HomePage() {
         </div>
 
         <div className="page-container text-center relative z-10">
+          <div className="flex justify-center mb-5">
+            <img
+              src="/images/logo.png"
+              alt="IBF Pocking Logo"
+              className="w-20 h-20 rounded-2xl shadow-lg"
+            />
+          </div>
+          <p className="animate-hero-title text-2xl md:text-3xl font-bold text-mosque-gold-300 mb-1 tracking-wide" dir="rtl" lang="ar">
+            مسجد عباد الرحمن
+          </p>
           <h1 className="animate-hero-title text-4xl md:text-5xl font-bold mb-6 max-w-3xl mx-auto">
-            🕌 Willkommen bei der Moschee Pocking
+            Willkommen bei der Moschee Pocking
           </h1>
           <p className="animate-hero-subtitle text-lg md:text-xl text-mosque-green-100 mb-10 max-w-2xl mx-auto">
             Gemeinsam bauen wir ein Haus des Gebets und der Gemeinschaft.

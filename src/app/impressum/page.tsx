@@ -104,7 +104,7 @@ export default function ImpressumPage() {
           </h2>
           <div className="text-gray-700">
             <p className="font-semibold">{SITE_CONFIG.legalInfo.chairman}</p>
-            <p>{SITE_CONFIG.contact.address}</p>
+            <p>{SITE_CONFIG.contact.legalRepAddress}</p>
           </div>
         </section>
 
