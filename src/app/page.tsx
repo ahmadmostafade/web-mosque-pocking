@@ -2,6 +2,7 @@ import Link from "next/link";
 import DonationProgressBar from "@/components/DonationProgressBar";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
 import AyahBanner from "@/components/AyahBanner";
+import GoogleRating from "@/components/GoogleRating";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getDonationProgress, getDonationGoal } from "@/lib/db-donations";
 import { fetchPrayerTimes, getNextPrayer } from "@/lib/prayer-times";
@@ -100,6 +101,17 @@ export default async function HomePage() {
 
         <AnimateOnScroll animation="fade-right" delay={150}>
           <PrayerTimesCard times={prayerTimes} nextPrayer={nextPrayer} />
+        </AnimateOnScroll>
+      </section>
+
+      {/* Google Rating */}
+      <section className="bg-gray-50 py-10 border-y border-gray-100">
+        <AnimateOnScroll animation="fade-up">
+          <div className="page-container flex justify-center">
+            <div className="w-full max-w-sm">
+              <GoogleRating />
+            </div>
+          </div>
         </AnimateOnScroll>
       </section>
 
