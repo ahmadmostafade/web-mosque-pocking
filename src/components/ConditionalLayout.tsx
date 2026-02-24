@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SocialSection from "@/components/SocialSection";
 import CookieBanner from "@/components/CookieBanner";
 
 export default function ConditionalLayout({
@@ -21,6 +22,7 @@ export default function ConditionalLayout({
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">{children}</main>
+      <SocialSection />
       <Footer />
       <CookieBanner />
     </div>
