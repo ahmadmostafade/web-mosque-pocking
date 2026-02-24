@@ -1,4 +1,5 @@
 import db from "./db";
+import bcrypt from "bcryptjs";
 
 export interface AdminUser {
   id: number;
@@ -13,26 +14,28 @@ export function getAdminUser(username: string): AdminUser | null {
   return (stmt.get(username) as AdminUser) || null;
 }
 
-export function updateAdminPassword(
+export async function updateAdminPassword(
   username: string,
-  newPasswordHash: string
-): boolean {
+  newPassword: string
+): Promise<boolean> {
+  const hash = await bcrypt.hash(newPassword, 12);
   const stmt = db.prepare(
     "UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ?"
   );
-  const result = stmt.run(newPasswordHash, username);
+  const result = stmt.run(hash, username);
   return result.changes > 0;
 }
 
-export function createAdminUser(
+export async function createAdminUser(
   username: string,
-  passwordHash: string
-): boolean {
+  password: string
+): Promise<boolean> {
   try {
+    const hash = await bcrypt.hash(password, 12);
     const stmt = db.prepare(
       "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)"
     );
-    stmt.run(username, passwordHash);
+    stmt.run(username, hash);
     return true;
   } catch {
     return false;

@@ -1,4 +1,5 @@
 import { getAdminUser } from "./db-admin";
+import bcrypt from "bcryptjs";
 
 /**
  * Simple authentication system for admin dashboard.
@@ -41,19 +42,17 @@ function recordAttempt(ip: string): void {
   }
 }
 
-export function authenticate(
+export async function authenticate(
   username: string,
   password: string,
   ip: string = "unknown"
-): Session | null {
+): Promise<Session | null> {
   if (isRateLimited(ip)) return null;
 
   recordAttempt(ip);
 
-  // Get user from database
   const user = getAdminUser(username);
-  if (user && user.password_hash === password) {
-    // Note: In production, use bcrypt.compare(password, user.password_hash)
+  if (user && (await bcrypt.compare(password, user.password_hash))) {
     const session: Session = {
       id: `sess-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       username,

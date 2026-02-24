@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const ip = request.headers.get("x-forwarded-for") || "unknown";
-    const session = authenticate(username, password, ip);
+    const session = await authenticate(username, password, ip);
 
     if (!session) {
       return NextResponse.json(

@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
+import bcrypt from "bcryptjs";
 
 const dbDir = path.join(process.cwd(), "data");
 const dbPath = path.join(dbDir, "mosque.db");
@@ -74,15 +75,22 @@ function initializeDatabase() {
     );
   `);
 
-  // Insert default admin user (password: moschee2026!)
+  // Insert default admin user — password comes from env, never hardcoded
   const adminExists = db
     .prepare("SELECT COUNT(*) as count FROM admin_users WHERE username = ?")
     .get("admin") as { count: number };
 
   if (adminExists.count === 0) {
+    const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+    if (!defaultPassword) {
+      throw new Error(
+        "ADMIN_DEFAULT_PASSWORD env variable is required to initialize the admin user."
+      );
+    }
+    const hash = bcrypt.hashSync(defaultPassword, 12);
     db.prepare(
       "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)"
-    ).run("admin", "moschee2026!"); // In production, use bcrypt
+    ).run("admin", hash);
   }
 
   // Insert default Iqamah offsets
