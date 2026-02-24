@@ -1,16 +1,48 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Mock the db-donations module so tests don't touch the real SQLite DB
+vi.mock("./db-donations", () => {
+  let donations: Array<{ id: number; amount: number; source: string; anonymous: boolean; donor_name: string | null; created_at: string; updated_by: string | null }> = [];
+  let nextId = 1;
+  let adjustment = 0;
+
+  return {
+    getAllDonations: vi.fn(() => donations),
+    addDonation: vi.fn((amount: number, source: string, anonymous: boolean, donorName: string | null) => {
+      const id = nextId++;
+      donations.push({ id, amount, source, anonymous, donor_name: donorName, created_at: new Date().toISOString(), updated_by: null });
+      return id;
+    }),
+    getDonationTotals: vi.fn(() => {
+      const manual = donations.filter(d => d.source === "manual").reduce((s, d) => s + d.amount, 0);
+      const stripe = donations.filter(d => d.source === "stripe").reduce((s, d) => s + d.amount, 0);
+      return { manual, stripe, adjustment, total: manual + stripe + adjustment };
+    }),
+    updateDonationAdjustment: vi.fn((amount: number) => { adjustment = amount; }),
+    getDonationGoal: vi.fn(() => 60000),
+    getDonationProgress: vi.fn(() => 0),
+    updateDonationProgress: vi.fn(),
+    __reset: () => { donations = []; nextId = 1; adjustment = 0; },
+  };
+});
+
 import {
   getDonations,
   addDonation,
   calculateTotalBySource,
   updateManualAdjustment,
-  resetStore,
   getDonationSettings,
 } from "./donation-store";
+import * as dbDonations from "./db-donations";
+
+function resetMock() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dbDonations as any).__reset();
+}
 
 describe("donation-store", () => {
   beforeEach(() => {
-    resetStore();
+    resetMock();
   });
 
   it("starts with empty donations after reset", () => {
@@ -56,5 +88,10 @@ describe("donation-store", () => {
     addDonation({ amount: 50, source: "manual", date: "2026-02-15", anonymous: true });
     const after = getDonationSettings().lastUpdated;
     expect(new Date(after).getTime()).toBeGreaterThanOrEqual(new Date(before).getTime());
+  });
+
+  it("returns donation goal from settings", () => {
+    const settings = getDonationSettings();
+    expect(settings.goalAmount).toBe(60000);
   });
 });

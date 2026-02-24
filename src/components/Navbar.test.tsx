@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 describe("Navbar", () => {
   it("renders the logo/brand", () => {
     render(<Navbar />);
-    expect(screen.getByText(/Moschee Pocking/)).toBeInTheDocument();
+    expect(screen.getByText(/IBF Pocking/)).toBeInTheDocument();
   });
 
   it("renders all navigation links", () => {

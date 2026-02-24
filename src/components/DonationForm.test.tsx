@@ -5,15 +5,15 @@ import DonationForm from "./DonationForm";
 describe("DonationForm", () => {
   it("renders preset amount buttons", () => {
     render(<DonationForm />);
-    expect(screen.getByText("10 €")).toBeInTheDocument();
-    expect(screen.getByText("50 €")).toBeInTheDocument();
-    expect(screen.getByText("100 €")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^10/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^20/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^50/ })).toBeInTheDocument();
   });
 
   it("selects preset amount on click", () => {
     render(<DonationForm />);
-    fireEvent.click(screen.getByText("50 €"));
-    const input = screen.getByLabelText("Betrag (€)") as HTMLInputElement;
+    fireEvent.click(screen.getByRole("button", { name: /^50/ }));
+    const input = screen.getByLabelText(/Betrag/) as HTMLInputElement;
     expect(input.value).toBe("50");
   });
 

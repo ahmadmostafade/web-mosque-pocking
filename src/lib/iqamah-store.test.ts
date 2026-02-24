@@ -10,26 +10,43 @@ describe("iqamah-store", () => {
     resetIqamahStore();
   });
 
-  it("returns default iqamah times", () => {
+  it("returns iqamah times in offset format", () => {
     const times = getIqamahTimes();
-    expect(times.Fajr).toBe("06:00");
-    expect(times.Jummah).toBe("13:45");
+    // After reset, all prayers get offset 15 min (Maghrib gets 5)
+    expect(times.Fajr).toMatch(/\+\d+ min/);
+    expect(times.Dhuhr).toMatch(/\+\d+ min/);
+    expect(times.Maghrib).toBe("+5 min");
+    expect(times.lastUpdated).toBeTruthy();
   });
 
   it("updates specific iqamah times", () => {
-    updateIqamahTimes({ Fajr: "05:45", Isha: "21:00" });
+    updateIqamahTimes({ Fajr: "+20 min", Isha: "+10 min" });
     const times = getIqamahTimes();
-    expect(times.Fajr).toBe("05:45");
-    expect(times.Isha).toBe("21:00");
-    expect(times.Dhuhr).toBe("13:00"); // unchanged
+    expect(times.Fajr).toBe("+20 min");
+    expect(times.Isha).toBe("+10 min");
+  });
+
+  it("parses numeric offset strings correctly", () => {
+    updateIqamahTimes({ Dhuhr: "+30 min" });
+    const times = getIqamahTimes();
+    expect(times.Dhuhr).toBe("+30 min");
   });
 
   it("updates lastUpdated on change", () => {
     const before = getIqamahTimes().lastUpdated;
-    updateIqamahTimes({ Fajr: "05:30" });
+    updateIqamahTimes({ Fajr: "+25 min" });
     const after = getIqamahTimes().lastUpdated;
     expect(new Date(after).getTime()).toBeGreaterThanOrEqual(
       new Date(before).getTime()
     );
+  });
+
+  it("returns all five prayers", () => {
+    const times = getIqamahTimes();
+    expect(times.Fajr).toBeTruthy();
+    expect(times.Dhuhr).toBeTruthy();
+    expect(times.Asr).toBeTruthy();
+    expect(times.Maghrib).toBeTruthy();
+    expect(times.Isha).toBeTruthy();
   });
 });

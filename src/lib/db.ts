@@ -11,10 +11,18 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const db = new Database(dbPath);
+// Persist DB connection across HMR reloads to avoid multiple open connections
+declare global {
+  // eslint-disable-next-line no-var
+  var __db: InstanceType<typeof Database> | undefined;
+}
 
-// Enable WAL mode for better concurrency
-db.pragma("journal_mode = WAL");
+if (!global.__db) {
+  global.__db = new Database(dbPath);
+  global.__db.pragma("journal_mode = WAL");
+}
+
+const db = global.__db;
 
 // Initialize database schema
 function initializeDatabase() {
@@ -123,7 +131,15 @@ function initializeDatabase() {
   }
 }
 
-// Initialize on first import
-initializeDatabase();
+// Initialize on first import (only once per process)
+declare global {
+  // eslint-disable-next-line no-var
+  var __dbInitialized: boolean | undefined;
+}
+
+if (!global.__dbInitialized) {
+  initializeDatabase();
+  global.__dbInitialized = true;
+}
 
 export default db;

@@ -35,9 +35,9 @@ describe("PrayerTimesCard", () => {
         nextPrayer={{ name: "Dhuhr", time: "12:30" }}
       />
     );
-    // The Dhuhr row should have the highlight class
+    // The Dhuhr row should have the highlight class (text-mosque-green-700)
     const dhuhrTime = screen.getByText("12:30");
-    expect(dhuhrTime.className).toContain("font-bold");
+    expect(dhuhrTime.className).toContain("text-mosque-green-700");
   });
 
   it("shows error message when times are null", () => {
