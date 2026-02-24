@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DonationProgressBar from "@/components/DonationProgressBar";
 
+type HomeLayout = "v1" | "v2";
+
 interface DashboardData {
   donations: { total: number; goal: number; percentage: number };
 }
@@ -12,6 +14,8 @@ interface DashboardData {
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [homeLayout, setHomeLayoutState] = useState<HomeLayout>("v2");
+  const [layoutSaving, setLayoutSaving] = useState(false);
   const router = useRouter();
 
   const checkAuth = useCallback(async () => {
@@ -38,6 +42,10 @@ export default function AdminDashboard() {
           percentage: Math.min(100, Math.round((currentAmount / goalAmount) * 100)),
         },
       });
+
+      const layoutRes = await fetch("/api/home-layout");
+      const layoutData = await layoutRes.json();
+      setHomeLayoutState(layoutData.layout ?? "v2");
     } catch {
       // Silently handle errors
     } finally {
@@ -54,6 +62,17 @@ export default function AdminDashboard() {
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/admin/login");
+  }
+
+  async function handleLayoutChange(layout: HomeLayout) {
+    setLayoutSaving(true);
+    await fetch("/api/home-layout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ layout }),
+    });
+    setHomeLayoutState(layout);
+    setLayoutSaving(false);
   }
 
   if (loading) {
@@ -155,6 +174,40 @@ export default function AdminDashboard() {
             <h3 className="font-bold text-mosque-green-700 mb-2">Passwort ändern</h3>
             <p className="text-sm text-gray-600">Admin-Passwort aktualisieren</p>
           </Link>
+        </div>
+
+        {/* Home Layout Toggle */}
+        <div className="mt-8 bg-white rounded-xl shadow-md p-6">
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Startseiten-Layout</h2>
+          <p className="text-sm text-gray-500 mb-5">Wählen Sie, welche Version der Startseite angezeigt wird.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {(["v1", "v2"] as HomeLayout[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => handleLayoutChange(v)}
+                disabled={layoutSaving}
+                className={`relative rounded-xl border-2 p-5 text-left transition-all duration-200 ${
+                  homeLayout === v
+                    ? "border-mosque-green-600 bg-mosque-green-50"
+                    : "border-gray-200 hover:border-mosque-green-300 bg-white"
+                }`}
+              >
+                {homeLayout === v && (
+                  <span className="absolute top-3 right-3 text-xs font-semibold bg-mosque-green-600 text-white px-2 py-0.5 rounded-full">
+                    Aktiv
+                  </span>
+                )}
+                <p className="font-bold text-mosque-green-800 mb-1">
+                  {v === "v1" ? "Version 1 – Klassisch" : "Version 2 – Modern"}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {v === "v1"
+                    ? "Einfaches Hero-Banner, Spendenfortschritt, Gebetszeiten & Ayah."
+                    : "Vollbild-Hero mit Foto, Stats-Leiste, Galerie-Vorschau & mehr."}
+                </p>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
