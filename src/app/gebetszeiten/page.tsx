@@ -5,6 +5,8 @@ import { getJummahTimes } from "@/lib/db-jummah";
 import PrayerTimesCard from "@/components/PrayerTimesCard";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Gebetszeiten",
   description: "Aktuelle Gebetszeiten und Iqāmah-Zeiten für Pocking.",

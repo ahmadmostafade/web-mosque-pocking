@@ -4,6 +4,8 @@ import { getHomeLayout } from "@/lib/db-settings";
 import HomeV1 from "@/components/HomeV1";
 import HomeV2 from "@/components/HomeV2";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const currentAmount = await getDonationProgress();
   const goalAmount = await getDonationGoal();

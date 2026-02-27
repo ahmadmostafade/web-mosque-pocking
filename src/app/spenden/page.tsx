@@ -9,6 +9,8 @@ import { SITE_CONFIG } from "@/lib/constants";
 import { getFaqSchema } from "@/lib/structured-data";
 import { getDonationProgress, getDonationGoal } from "@/lib/db-donations";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Spenden – Moscheekauf",
   description:
