@@ -4,7 +4,7 @@ import { updateAdminPassword } from "@/lib/db-admin";
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get("session")?.value;
-  if (!sessionId || !validateSession(sessionId)) {
+  if (!sessionId || !(await validateSession(sessionId))) {
     return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
   }
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = validateSession(sessionId)!;
+    const session = (await validateSession(sessionId))!;
 
     // Re-authenticate with current password before allowing change
     const { authenticate } = await import("@/lib/auth");

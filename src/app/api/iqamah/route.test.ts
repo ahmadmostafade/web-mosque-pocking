@@ -1,21 +1,54 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { resetIqamahStore } from "@/lib/iqamah-store";
 
 // Mock auth so tests can pass session validation
 vi.mock("@/lib/auth", () => ({
-  validateSession: vi.fn((id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
-  isRateLimited: vi.fn(() => false),
+  validateSession: vi.fn(async (id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
+  isRateLimited: vi.fn(async () => false),
   authenticate: vi.fn(),
   logout: vi.fn(),
   resetAuthStore: vi.fn(),
 }));
 
+// Mock db-iqamah so tests don't need a real PostgreSQL connection
+vi.mock("@/lib/db-iqamah", () => {
+  const times: Record<string, { id: number; prayer_name: string; offset_minutes: number; updated_at: string; updated_by: string | null }> = {};
+  let nextId = 1;
+
+  return {
+    getAllIqamahTimes: vi.fn(async () => Object.values(times).sort((a, b) => a.id - b.id)),
+    getIqamahTime: vi.fn(async (name: string) => times[name] || null),
+    updateIqamahTime: vi.fn(async (name: string, offset: number, updatedBy: string) => {
+      if (times[name]) {
+        times[name].offset_minutes = offset;
+        times[name].updated_at = new Date().toISOString();
+        times[name].updated_by = updatedBy;
+        return true;
+      }
+      return false;
+    }),
+    upsertIqamahTime: vi.fn(async (name: string, offset: number, updatedBy: string) => {
+      if (times[name]) {
+        times[name].offset_minutes = offset;
+        times[name].updated_at = new Date().toISOString();
+        times[name].updated_by = updatedBy;
+      } else {
+        times[name] = { id: nextId++, prayer_name: name, offset_minutes: offset, updated_at: new Date().toISOString(), updated_by: updatedBy };
+      }
+    }),
+    __reset: () => {
+      Object.keys(times).forEach(k => delete times[k]);
+      nextId = 1;
+    },
+  };
+});
+
+import { resetIqamahStore } from "@/lib/iqamah-store";
 import { GET, PUT } from "./route";
 
 describe("Iqamah API", () => {
-  beforeEach(() => {
-    resetIqamahStore();
+  beforeEach(async () => {
+    await resetIqamahStore();
   });
 
   it("GET returns current iqamah times in offset format", async () => {

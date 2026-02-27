@@ -4,7 +4,7 @@ import { getJummahTimes, updateJummahTimes } from "@/lib/db-jummah";
 
 export async function GET() {
   try {
-    const times = getJummahTimes();
+    const times = await getJummahTimes();
     return NextResponse.json({
       khutba: times.khutba_time,
     });
@@ -20,7 +20,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const sessionId = request.cookies.get("session")?.value;
-    if (!sessionId || !validateSession(sessionId)) {
+    if (!sessionId || !(await validateSession(sessionId))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    updateJummahTimes(khutba, "admin");
+    await updateJummahTimes(khutba, "admin");
 
     return NextResponse.json({ success: true });
   } catch (error) {

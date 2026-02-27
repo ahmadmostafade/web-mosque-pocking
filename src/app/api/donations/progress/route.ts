@@ -5,7 +5,7 @@ import { updateDonationProgress } from "@/lib/db-donations";
 export async function PUT(request: NextRequest) {
   try {
     const sessionId = request.cookies.get("session")?.value;
-    if (!sessionId || !validateSession(sessionId)) {
+    if (!sessionId || !(await validateSession(sessionId))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    updateDonationProgress(progress, "admin");
+    await updateDonationProgress(progress, "admin");
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -9,8 +9,8 @@ export interface IqamahTimes {
   lastUpdated: string;
 }
 
-export function getIqamahTimes(): IqamahTimes {
-  const dbTimes = getAllIqamahTimes();
+export async function getIqamahTimes(): Promise<IqamahTimes> {
+  const dbTimes = await getAllIqamahTimes();
   const times: Partial<IqamahTimes> = {};
 
   let lastUpdated = new Date(0).toISOString();
@@ -32,11 +32,11 @@ export function getIqamahTimes(): IqamahTimes {
   };
 }
 
-export function updateIqamahTimes(
+export async function updateIqamahTimes(
   times: Partial<Omit<IqamahTimes, "lastUpdated">>,
   updatedBy: string = "admin"
-): IqamahTimes {
-  Object.entries(times).forEach(([prayer, value]) => {
+): Promise<IqamahTimes> {
+  for (const [prayer, value] of Object.entries(times)) {
     let offsetMinutes = 15; // default
     if (typeof value === "string") {
       // Parse "+X min" format
@@ -46,16 +46,16 @@ export function updateIqamahTimes(
       }
     }
 
-    upsertIqamahTime(prayer, offsetMinutes, updatedBy);
-  });
+    await upsertIqamahTime(prayer, offsetMinutes, updatedBy);
+  }
 
   return getIqamahTimes();
 }
 
-export function resetIqamahStore(): void {
+export async function resetIqamahStore(): Promise<void> {
   // For testing purposes
   const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-  prayers.forEach((prayer) => {
-    upsertIqamahTime(prayer, prayer === "Maghrib" ? 5 : 15, "system");
-  });
+  for (const prayer of prayers) {
+    await upsertIqamahTime(prayer, prayer === "Maghrib" ? 5 : 15, "system");
+  }
 }

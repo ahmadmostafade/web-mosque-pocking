@@ -15,9 +15,9 @@ export const metadata: Metadata = {
     "Unterstützen Sie den Kauf der Moschee Pocking mit Ihrer Spende.",
 };
 
-export default function SpendenPage() {
-  const currentAmount = getDonationProgress();
-  const goalAmount = getDonationGoal();
+export default async function SpendenPage() {
+  const currentAmount = await getDonationProgress();
+  const goalAmount = await getDonationGoal();
   const percentage = Math.min(Math.round((currentAmount / goalAmount) * 100), 100);
   const remaining = Math.max(goalAmount - currentAmount, 0);
 
@@ -56,42 +56,42 @@ export default function SpendenPage() {
         {/* Bank Transfer */}
         <AnimateOnScroll animation="fade-left">
           <div className="bg-white rounded-xl shadow-md p-6 h-full">
-          <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
-            Banküberweisung
-          </h2>
-          <div className="space-y-2 text-sm">
-            <p>
-              <span className="font-medium text-gray-500">Empfänger:</span>{" "}
-              {SITE_CONFIG.bankDetails.accountHolder}
-            </p>
-            <p>
-              <span className="font-medium text-gray-500">IBAN:</span>{" "}
-              <span className="font-mono">
-                {SITE_CONFIG.bankDetails.iban}
-              </span>
-            </p>
-            <p>
-              <span className="font-medium text-gray-500">BIC:</span>{" "}
-              {SITE_CONFIG.bankDetails.bic}
-            </p>
-            <p>
-              <span className="font-medium text-gray-500">Bank:</span>{" "}
-              {SITE_CONFIG.bankDetails.bank}
-            </p>
-            <p>
-              <span className="font-medium text-gray-500">
-                Verwendungszweck:
-              </span>{" "}
-              {SITE_CONFIG.bankDetails.reference}
-            </p>
-          </div>
+            <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
+              Banküberweisung
+            </h2>
+            <div className="space-y-2 text-sm">
+              <p>
+                <span className="font-medium text-gray-500">Empfänger:</span>{" "}
+                {SITE_CONFIG.bankDetails.accountHolder}
+              </p>
+              <p>
+                <span className="font-medium text-gray-500">IBAN:</span>{" "}
+                <span className="font-mono">
+                  {SITE_CONFIG.bankDetails.iban}
+                </span>
+              </p>
+              <p>
+                <span className="font-medium text-gray-500">BIC:</span>{" "}
+                {SITE_CONFIG.bankDetails.bic}
+              </p>
+              <p>
+                <span className="font-medium text-gray-500">Bank:</span>{" "}
+                {SITE_CONFIG.bankDetails.bank}
+              </p>
+              <p>
+                <span className="font-medium text-gray-500">
+                  Verwendungszweck:
+                </span>{" "}
+                {SITE_CONFIG.bankDetails.reference}
+              </p>
+            </div>
 
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-500 mb-2">
-              QR-Code für Überweisung
-            </h3>
-            <QrCodeDisplay />
-          </div>
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold text-gray-500 mb-2">
+                QR-Code für Überweisung
+              </h3>
+              <QrCodeDisplay />
+            </div>
           </div>
         </AnimateOnScroll>
 
@@ -114,16 +114,16 @@ export default function SpendenPage() {
       {/* Transparency */}
       <AnimateOnScroll animation="fade-up" delay={100}>
         <div className="bg-mosque-green-50 rounded-xl p-6 mt-8">
-        <h2 className="text-xl font-bold text-mosque-green-700 mb-3">
-          Transparenz
-        </h2>
-        <p className="text-gray-700">
-          Alle Spenden werden ausschließlich für den Kauf und die Renovierung
-          des Moschee-Gebäudes verwendet. Der Verein{" "}
-          <strong>{SITE_CONFIG.bankDetails.accountHolder}</strong> verwaltet die
-          Gelder treuhänderisch und veröffentlicht regelmäßige Updates zum
-          Projektfortschritt.
-        </p>
+          <h2 className="text-xl font-bold text-mosque-green-700 mb-3">
+            Transparenz
+          </h2>
+          <p className="text-gray-700">
+            Alle Spenden werden ausschließlich für den Kauf und die Renovierung
+            des Moschee-Gebäudes verwendet. Der Verein{" "}
+            <strong>{SITE_CONFIG.bankDetails.accountHolder}</strong> verwaltet die
+            Gelder treuhänderisch und veröffentlicht regelmäßige Updates zum
+            Projektfortschritt.
+          </p>
         </div>
       </AnimateOnScroll>
     </div>

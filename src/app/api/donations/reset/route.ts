@@ -4,12 +4,12 @@ import { clearAllDonations, resetDonationProgress } from "@/lib/db-donations";
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get("session")?.value;
-  if (!sessionId || !validateSession(sessionId)) {
+  if (!sessionId || !(await validateSession(sessionId))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  clearAllDonations();
-  resetDonationProgress("admin");
+  await clearAllDonations();
+  await resetDonationProgress("admin");
 
   return NextResponse.json({ success: true });
 }

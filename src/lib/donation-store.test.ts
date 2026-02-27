@@ -1,27 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock the db-donations module so tests don't touch the real SQLite DB
+// Mock the db-donations module so tests don't touch a real PostgreSQL DB
 vi.mock("./db-donations", () => {
   let donations: Array<{ id: number; amount: number; source: string; anonymous: boolean; donor_name: string | null; created_at: string; updated_by: string | null }> = [];
   let nextId = 1;
   let adjustment = 0;
 
   return {
-    getAllDonations: vi.fn(() => donations),
-    addDonation: vi.fn((amount: number, source: string, anonymous: boolean, donorName: string | null) => {
+    getAllDonations: vi.fn(async () => donations),
+    addDonation: vi.fn(async (amount: number, source: string, anonymous: boolean, donorName: string | null) => {
       const id = nextId++;
       donations.push({ id, amount, source, anonymous, donor_name: donorName, created_at: new Date().toISOString(), updated_by: null });
       return id;
     }),
-    getDonationTotals: vi.fn(() => {
+    getDonationTotals: vi.fn(async () => {
       const manual = donations.filter(d => d.source === "manual").reduce((s, d) => s + d.amount, 0);
       const stripe = donations.filter(d => d.source === "stripe").reduce((s, d) => s + d.amount, 0);
       return { manual, stripe, adjustment, total: manual + stripe + adjustment };
     }),
-    updateDonationAdjustment: vi.fn((amount: number) => { adjustment = amount; }),
-    getDonationGoal: vi.fn(() => 60000),
-    getDonationProgress: vi.fn(() => 0),
-    updateDonationProgress: vi.fn(),
+    updateDonationAdjustment: vi.fn(async (amount: number) => { adjustment = amount; }),
+    getDonationGoal: vi.fn(async () => 60000),
+    getDonationProgress: vi.fn(async () => 0),
+    updateDonationProgress: vi.fn(async () => { }),
     __reset: () => { donations = []; nextId = 1; adjustment = 0; },
   };
 });
@@ -45,12 +45,12 @@ describe("donation-store", () => {
     resetMock();
   });
 
-  it("starts with empty donations after reset", () => {
-    expect(getDonations()).toHaveLength(0);
+  it("starts with empty donations after reset", async () => {
+    expect(await getDonations()).toHaveLength(0);
   });
 
-  it("adds a manual donation", () => {
-    const donation = addDonation({
+  it("adds a manual donation", async () => {
+    const donation = await addDonation({
       amount: 100,
       source: "manual",
       date: "2026-02-15",
@@ -59,39 +59,39 @@ describe("donation-store", () => {
     });
 
     expect(donation.id).toBeTruthy();
-    expect(getDonations()).toHaveLength(1);
-    expect(getDonations()[0].amount).toBe(100);
+    expect(await getDonations()).toHaveLength(1);
+    expect((await getDonations())[0].amount).toBe(100);
   });
 
-  it("calculates totals by source", () => {
-    addDonation({ amount: 500, source: "manual", date: "2026-01-01", anonymous: false });
-    addDonation({ amount: 300, source: "stripe", date: "2026-01-02", anonymous: true });
-    addDonation({ amount: 200, source: "manual", date: "2026-01-03", anonymous: false });
+  it("calculates totals by source", async () => {
+    await addDonation({ amount: 500, source: "manual", date: "2026-01-01", anonymous: false });
+    await addDonation({ amount: 300, source: "stripe", date: "2026-01-02", anonymous: true });
+    await addDonation({ amount: 200, source: "manual", date: "2026-01-03", anonymous: false });
 
-    const totals = calculateTotalBySource();
+    const totals = await calculateTotalBySource();
     expect(totals.manual).toBe(700);
     expect(totals.stripe).toBe(300);
     expect(totals.total).toBe(1000);
   });
 
-  it("includes manual adjustment in total", () => {
-    addDonation({ amount: 500, source: "manual", date: "2026-01-01", anonymous: false });
-    updateManualAdjustment(100);
+  it("includes manual adjustment in total", async () => {
+    await addDonation({ amount: 500, source: "manual", date: "2026-01-01", anonymous: false });
+    await updateManualAdjustment(100);
 
-    const totals = calculateTotalBySource();
+    const totals = await calculateTotalBySource();
     expect(totals.adjustment).toBe(100);
     expect(totals.total).toBe(600);
   });
 
-  it("updates lastUpdated on donation add", () => {
-    const before = getDonationSettings().lastUpdated;
-    addDonation({ amount: 50, source: "manual", date: "2026-02-15", anonymous: true });
-    const after = getDonationSettings().lastUpdated;
+  it("updates lastUpdated on donation add", async () => {
+    const before = (await getDonationSettings()).lastUpdated;
+    await addDonation({ amount: 50, source: "manual", date: "2026-02-15", anonymous: true });
+    const after = (await getDonationSettings()).lastUpdated;
     expect(new Date(after).getTime()).toBeGreaterThanOrEqual(new Date(before).getTime());
   });
 
-  it("returns donation goal from settings", () => {
-    const settings = getDonationSettings();
+  it("returns donation goal from settings", async () => {
+    const settings = await getDonationSettings();
     expect(settings.goalAmount).toBe(60000);
   });
 });

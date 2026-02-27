@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 export default async function GebetszeitenPage() {
   const prayerTimes = await fetchPrayerTimes();
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes) : null;
-  const iqamah = getIqamahTimes();
-  const jummah = getJummahTimes();
+  const iqamah = await getIqamahTimes();
+  const jummah = await getJummahTimes();
 
   return (
     <div className="page-container-narrow page-section">

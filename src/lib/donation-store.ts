@@ -7,7 +7,7 @@ import {
 } from "./db-donations";
 
 /**
- * Donation store using SQLite database.
+ * Donation store using PostgreSQL database.
  */
 
 export interface Donation {
@@ -25,11 +25,11 @@ export interface DonationSettings {
   lastUpdated: string;
 }
 
-export function getDonations(): Donation[] {
-  const dbDonations = getAllDonations();
+export async function getDonations(): Promise<Donation[]> {
+  const dbDonations = await getAllDonations();
   return dbDonations.map((d) => ({
     id: d.id.toString(),
-    amount: d.amount,
+    amount: typeof d.amount === "string" ? parseFloat(d.amount) : d.amount,
     source: d.source as "manual" | "stripe",
     date: d.created_at.split("T")[0],
     donorName: d.donor_name || undefined,
@@ -37,9 +37,9 @@ export function getDonations(): Donation[] {
   }));
 }
 
-export function getDonationSettings(): DonationSettings {
-  const totals = getDonationTotals();
-  const goal = getDonationGoal();
+export async function getDonationSettings(): Promise<DonationSettings> {
+  const totals = await getDonationTotals();
+  const goal = await getDonationGoal();
 
   return {
     goalAmount: goal,
@@ -48,8 +48,10 @@ export function getDonationSettings(): DonationSettings {
   };
 }
 
-export function addDonation(donation: Omit<Donation, "id">): Donation {
-  const id = dbAddDonation(
+export async function addDonation(
+  donation: Omit<Donation, "id">
+): Promise<Donation> {
+  const id = await dbAddDonation(
     donation.amount,
     donation.source,
     donation.anonymous,
@@ -63,21 +65,21 @@ export function addDonation(donation: Omit<Donation, "id">): Donation {
   };
 }
 
-export function updateManualAdjustment(amount: number): void {
-  updateDonationAdjustment(amount, "admin");
+export async function updateManualAdjustment(amount: number): Promise<void> {
+  await updateDonationAdjustment(amount, "admin");
 }
 
-export function calculateTotalBySource(): {
+export async function calculateTotalBySource(): Promise<{
   manual: number;
   stripe: number;
   adjustment: number;
   total: number;
-} {
+}> {
   return getDonationTotals();
 }
 
 // For testing: reset store
-export function resetStore(): void {
+export async function resetStore(): Promise<void> {
   // This would require a database reset function
   // For now, just a placeholder
 }

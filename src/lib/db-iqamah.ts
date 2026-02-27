@@ -1,4 +1,4 @@
-import db from "./db";
+import pool, { ensureInitialized } from "./db";
 
 export interface IqamahTime {
   id: number;
@@ -8,40 +8,51 @@ export interface IqamahTime {
   updated_by: string | null;
 }
 
-export function getAllIqamahTimes(): IqamahTime[] {
-  const stmt = db.prepare("SELECT * FROM iqamah_times ORDER BY id");
-  return stmt.all() as IqamahTime[];
-}
-
-export function getIqamahTime(prayerName: string): IqamahTime | null {
-  const stmt = db.prepare("SELECT * FROM iqamah_times WHERE prayer_name = ?");
-  return (stmt.get(prayerName) as IqamahTime) || null;
-}
-
-export function updateIqamahTime(
-  prayerName: string,
-  offsetMinutes: number,
-  updatedBy: string
-): boolean {
-  const stmt = db.prepare(
-    "UPDATE iqamah_times SET offset_minutes = ?, updated_at = CURRENT_TIMESTAMP, updated_by = ? WHERE prayer_name = ?"
+export async function getAllIqamahTimes(): Promise<IqamahTime[]> {
+  await ensureInitialized();
+  const { rows } = await pool.query(
+    "SELECT * FROM iqamah_times ORDER BY id"
   );
-  const result = stmt.run(offsetMinutes, updatedBy, prayerName);
-  return result.changes > 0;
+  return rows;
 }
 
-export function upsertIqamahTime(
+export async function getIqamahTime(
+  prayerName: string
+): Promise<IqamahTime | null> {
+  await ensureInitialized();
+  const { rows } = await pool.query(
+    "SELECT * FROM iqamah_times WHERE prayer_name = $1",
+    [prayerName]
+  );
+  return rows[0] || null;
+}
+
+export async function updateIqamahTime(
   prayerName: string,
   offsetMinutes: number,
   updatedBy: string
-): void {
-  const stmt = db.prepare(`
-    INSERT INTO iqamah_times (prayer_name, offset_minutes, updated_by)
-    VALUES (?, ?, ?)
-    ON CONFLICT(prayer_name) DO UPDATE SET
-      offset_minutes = excluded.offset_minutes,
-      updated_at = CURRENT_TIMESTAMP,
-      updated_by = excluded.updated_by
-  `);
-  stmt.run(prayerName, offsetMinutes, updatedBy);
+): Promise<boolean> {
+  await ensureInitialized();
+  const result = await pool.query(
+    "UPDATE iqamah_times SET offset_minutes = $1, updated_at = NOW(), updated_by = $2 WHERE prayer_name = $3",
+    [offsetMinutes, updatedBy, prayerName]
+  );
+  return (result.rowCount ?? 0) > 0;
+}
+
+export async function upsertIqamahTime(
+  prayerName: string,
+  offsetMinutes: number,
+  updatedBy: string
+): Promise<void> {
+  await ensureInitialized();
+  await pool.query(
+    `INSERT INTO iqamah_times (prayer_name, offset_minutes, updated_by)
+     VALUES ($1, $2, $3)
+     ON CONFLICT(prayer_name) DO UPDATE SET
+       offset_minutes = EXCLUDED.offset_minutes,
+       updated_at = NOW(),
+       updated_by = EXCLUDED.updated_by`,
+    [prayerName, offsetMinutes, updatedBy]
+  );
 }

@@ -1,4 +1,4 @@
-import db from "./db";
+import pool, { ensureInitialized } from "./db";
 import bcrypt from "bcryptjs";
 
 export interface AdminUser {
@@ -9,33 +9,41 @@ export interface AdminUser {
   updated_at: string;
 }
 
-export function getAdminUser(username: string): AdminUser | null {
-  const stmt = db.prepare("SELECT * FROM admin_users WHERE username = ?");
-  return (stmt.get(username) as AdminUser) || null;
+export async function getAdminUser(
+  username: string
+): Promise<AdminUser | null> {
+  await ensureInitialized();
+  const { rows } = await pool.query(
+    "SELECT * FROM admin_users WHERE username = $1",
+    [username]
+  );
+  return rows[0] || null;
 }
 
 export async function updateAdminPassword(
   username: string,
   newPassword: string
 ): Promise<boolean> {
+  await ensureInitialized();
   const hash = await bcrypt.hash(newPassword, 12);
-  const stmt = db.prepare(
-    "UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ?"
+  const result = await pool.query(
+    "UPDATE admin_users SET password_hash = $1, updated_at = NOW() WHERE username = $2",
+    [hash, username]
   );
-  const result = stmt.run(hash, username);
-  return result.changes > 0;
+  return (result.rowCount ?? 0) > 0;
 }
 
 export async function createAdminUser(
   username: string,
   password: string
 ): Promise<boolean> {
+  await ensureInitialized();
   try {
     const hash = await bcrypt.hash(password, 12);
-    const stmt = db.prepare(
-      "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)"
+    await pool.query(
+      "INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)",
+      [username, hash]
     );
-    stmt.run(username, hash);
     return true;
   } catch {
     return false;

@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock auth so tests can pass session validation
 vi.mock("@/lib/auth", () => ({
-  validateSession: vi.fn((id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
-  isRateLimited: vi.fn(() => false),
+  validateSession: vi.fn(async (id: string) => id === "test-session-id" ? { id, username: "admin", createdAt: Date.now(), expiresAt: Date.now() + 3600000 } : null),
+  isRateLimited: vi.fn(async () => false),
   authenticate: vi.fn(),
   logout: vi.fn(),
   resetAuthStore: vi.fn(),
 }));
 
-// Mock db-donations so tests don't touch the real SQLite DB
+// Mock db-donations so tests don't touch a real PostgreSQL DB
 vi.mock("@/lib/db-donations", () => {
   let donations: Array<{ id: number; amount: number; source: string; anonymous: boolean; donor_name: string | null; created_at: string; updated_by: string | null }> = [];
   let nextId = 1;
@@ -17,21 +17,21 @@ vi.mock("@/lib/db-donations", () => {
   let progress = 0;
 
   return {
-    getAllDonations: vi.fn(() => donations),
-    addDonation: vi.fn((amount: number, source: string, anonymous: boolean, donorName: string | null) => {
+    getAllDonations: vi.fn(async () => donations),
+    addDonation: vi.fn(async (amount: number, source: string, anonymous: boolean, donorName: string | null) => {
       const id = nextId++;
       donations.push({ id, amount, source, anonymous, donor_name: donorName, created_at: new Date().toISOString(), updated_by: null });
       return id;
     }),
-    getDonationTotals: vi.fn(() => {
+    getDonationTotals: vi.fn(async () => {
       const manual = donations.filter(d => d.source === "manual").reduce((s, d) => s + d.amount, 0);
       const stripe = donations.filter(d => d.source === "stripe").reduce((s, d) => s + d.amount, 0);
       return { manual, stripe, adjustment, total: manual + stripe + adjustment };
     }),
-    updateDonationAdjustment: vi.fn((amount: number) => { adjustment = amount; }),
-    getDonationGoal: vi.fn(() => 60000),
-    getDonationProgress: vi.fn(() => progress),
-    updateDonationProgress: vi.fn((p: number) => { progress = p; }),
+    updateDonationAdjustment: vi.fn(async (amount: number) => { adjustment = amount; }),
+    getDonationGoal: vi.fn(async () => 60000),
+    getDonationProgress: vi.fn(async () => progress),
+    updateDonationProgress: vi.fn(async (p: number) => { progress = p; }),
     __reset: () => { donations = []; nextId = 1; adjustment = 0; progress = 0; },
   };
 });

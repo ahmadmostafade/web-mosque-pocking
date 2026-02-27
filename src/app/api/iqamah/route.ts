@@ -3,18 +3,18 @@ import { validateSession } from "@/lib/auth";
 import { getIqamahTimes, updateIqamahTimes } from "@/lib/iqamah-store";
 
 export async function GET() {
-  return NextResponse.json(getIqamahTimes());
+  return NextResponse.json(await getIqamahTimes());
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const sessionId = request.cookies.get("session")?.value;
-    if (!sessionId || !validateSession(sessionId)) {
+    if (!sessionId || !(await validateSession(sessionId))) {
       return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
     }
 
     const body = await request.json();
-    const updated = updateIqamahTimes(body);
+    const updated = await updateIqamahTimes(body);
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json(

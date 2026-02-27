@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { getNextPrayer, PrayerTimesData } from "./prayer-times";
 
 const mockTimes: PrayerTimesData = {

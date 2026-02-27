@@ -9,14 +9,14 @@ import { getDonationProgress, updateDonationProgress } from "@/lib/db-donations"
 import { validateSession } from "@/lib/auth";
 
 export async function GET() {
-  const totals = calculateTotalBySource();
-  const settings = getDonationSettings();
-  const progress = getDonationProgress();
+  const totals = await calculateTotalBySource();
+  const settings = await getDonationSettings();
+  const progress = await getDonationProgress();
 
   return NextResponse.json({
     progress: progress > 0 ? progress : totals.total, // Use progress if set, otherwise use actual total
     total: totals,
-    donations: getDonations(),
+    donations: await getDonations(),
     settings,
   });
 }
@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const sessionId = request.cookies.get("session")?.value;
-    if (!sessionId || !validateSession(sessionId)) {
+    if (!sessionId || !(await validateSession(sessionId))) {
       return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
     }
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const donation = addDonation({
+    const donation = await addDonation({
       amount,
       source: source || "manual",
       date: new Date().toISOString().split("T")[0],
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Auto-update the public donation_progress by adding the new amount
-    const currentProgress = getDonationProgress();
-    updateDonationProgress(currentProgress + amount, "admin");
+    const currentProgress = await getDonationProgress();
+    await updateDonationProgress(currentProgress + amount, "admin");
 
     return NextResponse.json({ donation }, { status: 201 });
   } catch {

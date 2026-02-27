@@ -1,19 +1,27 @@
-import db from "./db";
+import pool, { ensureInitialized } from "./db";
 
 export type HomeLayout = "v1" | "v2";
 
-export function getHomeLayout(): HomeLayout {
-  const row = db.prepare("SELECT value FROM settings WHERE key = 'home_layout'").get() as { value: string } | undefined;
-  return (row?.value as HomeLayout) ?? "v2";
+export async function getHomeLayout(): Promise<HomeLayout> {
+  await ensureInitialized();
+  const { rows } = await pool.query(
+    "SELECT value FROM settings WHERE key = 'home_layout'"
+  );
+  return (rows[0]?.value as HomeLayout) ?? "v2";
 }
 
-export function setHomeLayout(layout: HomeLayout, updatedBy: string): void {
-  db.prepare(`
-    INSERT INTO settings (key, value, updated_by)
-    VALUES ('home_layout', ?, ?)
-    ON CONFLICT(key) DO UPDATE SET
-      value = excluded.value,
-      updated_at = CURRENT_TIMESTAMP,
-      updated_by = excluded.updated_by
-  `).run(layout, updatedBy);
+export async function setHomeLayout(
+  layout: HomeLayout,
+  updatedBy: string
+): Promise<void> {
+  await ensureInitialized();
+  await pool.query(
+    `INSERT INTO settings (key, value, updated_by)
+     VALUES ('home_layout', $1, $2)
+     ON CONFLICT(key) DO UPDATE SET
+       value = EXCLUDED.value,
+       updated_at = NOW(),
+       updated_by = EXCLUDED.updated_by`,
+    [layout, updatedBy]
+  );
 }

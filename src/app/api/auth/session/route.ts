@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
-  const session = validateSession(sessionId);
+  const session = await validateSession(sessionId);
   if (!session) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }

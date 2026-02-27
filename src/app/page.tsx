@@ -5,8 +5,8 @@ import HomeV1 from "@/components/HomeV1";
 import HomeV2 from "@/components/HomeV2";
 
 export default async function HomePage() {
-  const currentAmount = getDonationProgress();
-  const goalAmount = getDonationGoal();
+  const currentAmount = await getDonationProgress();
+  const goalAmount = await getDonationGoal();
   const percentage = Math.min(Math.round((currentAmount / goalAmount) * 100), 100);
   const remaining = Math.max(goalAmount - currentAmount, 0);
 
@@ -20,7 +20,7 @@ export default async function HomePage() {
 
   const prayerTimes = await fetchPrayerTimes();
   const nextPrayer = prayerTimes ? getNextPrayer(prayerTimes) : null;
-  const layout = getHomeLayout();
+  const layout = await getHomeLayout();
 
   const props = { progress, prayerTimes, nextPrayer };
 
