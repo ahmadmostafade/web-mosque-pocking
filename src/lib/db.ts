@@ -4,11 +4,11 @@ import bcrypt from "bcryptjs";
 // Create pool (this does NOT connect — safe at import time)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Neon requires SSL; pg does NOT parse sslmode from the connection string,
-  // so we must set it explicitly.
+  // Neon requires SSL with valid certs → verify-full (rejectUnauthorized: true).
+  // Skip SSL entirely for local development.
   ssl: process.env.DATABASE_URL?.includes("localhost")
     ? false
-    : { rejectUnauthorized: false },
+    : { rejectUnauthorized: true },
   max: 5,
 });
 
