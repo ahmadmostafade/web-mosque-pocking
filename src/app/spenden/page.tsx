@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import LiveDonationProgress from "@/components/LiveDonationProgress";
 import RecentDonations from "@/components/RecentDonations";
-import DonationForm from "@/components/DonationForm"; // temporarily unused (PayPal disabled)
+import DonationForm from "@/components/DonationForm";
 import QrCodeDisplay from "@/components/QrCodeDisplay";
 import AyahBanner from "@/components/AyahBanner";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
@@ -54,7 +54,7 @@ export default async function SpendenPage() {
         <AyahBanner showButton={false} />
       </AnimateOnScroll>
 
-      <div className="grid grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Bank Transfer */}
         <AnimateOnScroll animation="fade-left">
           <div className="bg-white rounded-xl shadow-md p-6 h-full">
@@ -97,15 +97,15 @@ export default async function SpendenPage() {
           </div>
         </AnimateOnScroll>
 
-        {/* Online Donation – PayPal (temporarily disabled, no account available yet) */}
-        {/* <AnimateOnScroll animation="fade-right" delay={150}>
+        {/* Online Donation – PayPal */}
+        <AnimateOnScroll animation="fade-right" delay={150}>
           <div className="bg-white rounded-xl shadow-md p-6 h-full">
-          <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
-            Online spenden
-          </h2>
-          <DonationForm />
+            <h2 className="text-xl font-bold text-mosque-green-700 mb-4">
+              Online spenden
+            </h2>
+            <DonationForm />
           </div>
-        </AnimateOnScroll> */}
+        </AnimateOnScroll>
       </div>
 
       {/* Recent Donations */}

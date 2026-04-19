@@ -18,6 +18,12 @@ export const SITE_CONFIG = {
     accountHolder: "Islamisches Bildungsforum Pocking e.V.",
     reference: "Moscheekauf",
   },
+  paypal: {
+    hostedButtonId: "5UE27E84TA9L4",
+    email: "2saad2hashem@gmail.com",
+    currency: "EUR",
+    itemName: "Moscheekauf Pocking",
+  },
   contact: {
     email: "info@ibf-pocking.de",
     address: "Tettenweiser Str. 16, 94060 Pocking",

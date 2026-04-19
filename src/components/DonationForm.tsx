@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import { validateDonationForm } from "@/lib/validation";
+import {
+  buildPayPalHostedButtonFields,
+  submitPayPalDonation,
+} from "@/lib/paypal";
+import { SITE_CONFIG } from "@/lib/constants";
 
 export default function DonationForm() {
   const [amount, setAmount] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const presetAmounts = [10, 20, 50];
 
@@ -14,13 +20,26 @@ export default function DonationForm() {
     e.preventDefault();
     const result = validateDonationForm({ amount, anonymous });
     setErrors(result.errors);
+    if (!result.valid) return;
 
-    if (result.valid) {
-      // In production: redirect to PayPal or process payment
-      alert(
-        `Vielen Dank für Ihre Spende von ${amount} €! (PayPal-Integration folgt)`
-      );
-    }
+    const itemName = anonymous
+      ? `${SITE_CONFIG.paypal.itemName} (anonym)`
+      : SITE_CONFIG.paypal.itemName;
+
+    const returnUrl = `${window.location.origin}/spenden?paypal=success`;
+    const cancelUrl = `${window.location.origin}/spenden?paypal=cancel`;
+
+    const fields = buildPayPalHostedButtonFields({
+      hostedButtonId: SITE_CONFIG.paypal.hostedButtonId,
+      amount: parseFloat(amount),
+      itemName,
+      currency: SITE_CONFIG.paypal.currency,
+      returnUrl,
+      cancelUrl,
+    });
+
+    setSubmitting(true);
+    submitPayPalDonation(fields);
   }
 
   return (
@@ -86,15 +105,15 @@ export default function DonationForm() {
       </div>
 
       <p className="text-xs text-gray-500 mb-4">
-        Verwendungszweck: Moscheekauf
+        Verwendungszweck: Moscheekauf · Sichere Weiterleitung zu PayPal
       </p>
 
-      {/* PayPal Button */}
       <button
         type="submit"
-        className="w-full bg-mosque-gold-400 text-mosque-green-900 font-bold py-3 rounded-xl hover:bg-mosque-gold-300 transition-colors"
+        disabled={submitting}
+        className="w-full bg-mosque-gold-400 text-mosque-green-900 font-bold py-3 rounded-xl hover:bg-mosque-gold-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        Mit PayPal spenden
+        {submitting ? "Weiterleitung zu PayPal..." : "Mit PayPal spenden"}
       </button>
     </form>
   );

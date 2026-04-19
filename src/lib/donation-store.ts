@@ -31,10 +31,16 @@ export async function getDonations(): Promise<Donation[]> {
     id: d.id.toString(),
     amount: typeof d.amount === "string" ? parseFloat(d.amount) : d.amount,
     source: d.source as "manual" | "stripe",
-    date: d.created_at.split("T")[0],
+    // pg returns TIMESTAMP as a Date; tests/older paths may pass strings
+    date: toISODate(d.created_at),
     donorName: d.donor_name || undefined,
     anonymous: Boolean(d.anonymous),
   }));
+}
+
+function toISODate(value: Date | string): string {
+  if (value instanceof Date) return value.toISOString().split("T")[0];
+  return String(value).split("T")[0];
 }
 
 export async function getDonationSettings(): Promise<DonationSettings> {

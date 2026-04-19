@@ -94,4 +94,42 @@ describe("donation-store", () => {
     const settings = await getDonationSettings();
     expect(settings.goalAmount).toBe(60000);
   });
+
+  it("normalizes created_at Date objects from pg into YYYY-MM-DD", async () => {
+    // pg returns TIMESTAMP columns as Date instances — regression test for
+    // TypeError: d.created_at.split is not a function
+    const getAllDonations = vi.mocked(dbDonations.getAllDonations);
+    getAllDonations.mockResolvedValueOnce([
+      {
+        id: 1,
+        amount: 100,
+        source: "manual",
+        anonymous: false,
+        donor_name: "Test",
+        created_at: new Date("2026-03-05T12:34:56.000Z"),
+        updated_by: null,
+      },
+    ]);
+
+    const donations = await getDonations();
+    expect(donations[0].date).toBe("2026-03-05");
+  });
+
+  it("still handles string created_at for backward compatibility", async () => {
+    const getAllDonations = vi.mocked(dbDonations.getAllDonations);
+    getAllDonations.mockResolvedValueOnce([
+      {
+        id: 2,
+        amount: 50,
+        source: "manual",
+        anonymous: false,
+        donor_name: null,
+        created_at: "2026-04-01T08:00:00.000Z",
+        updated_by: null,
+      },
+    ]);
+
+    const donations = await getDonations();
+    expect(donations[0].date).toBe("2026-04-01");
+  });
 });

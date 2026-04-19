@@ -6,7 +6,8 @@ export interface Donation {
   source: string;
   anonymous: boolean;
   donor_name: string | null;
-  created_at: string;
+  // pg returns TIMESTAMP columns as Date objects at runtime
+  created_at: Date | string;
   updated_by: string | null;
 }
 
