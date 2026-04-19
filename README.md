@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IBF Pocking — Mosque Community Website
 
-## Getting Started
+> **Live:** [ibf-pocking.de](https://ibf-pocking.de)
 
-First, run the development server:
+Full-stack community website for **Islamisches Bildungsforum Pocking e.V.** — a mosque in Pocking, Bavaria. Built to support a €60,000 fundraising campaign for purchasing and renovating their building, while serving as the digital hub for the community.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Public Website
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Feature | Details |
+|---|---|
+| **Live Donation Tracking** | Animated progress bar, recent donations wall, auto-refresh every 30s |
+| **SEPA QR Code** | EPC-standard QR code for instant bank transfers via mobile banking apps |
+| **Prayer Times** | Daily Adhan times (Aladhan API, 1h cache) + community-set Iqamah offsets + Jumu'ah Khutba time |
+| **Media Gallery** | Filterable image/video grid (Vorher/Nachher/Allgemein) with lightbox & keyboard navigation |
+| **Contact Form** | Validated form with honeypot spam protection |
+| **About / Story** | Full project history: acquisition, renovation status, volunteer work |
+| **GDPR Compliant** | Cookie consent banner, full Datenschutzerklärung, Impressum (§5 TMG), OpenStreetMap instead of Google Maps |
+| **Bilingual Elements** | German UI with Arabic text for Quranic verses, prayer names, and mosque branding |
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### Admin Panel (`/admin`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Feature | Details |
+|---|---|
+| **Donation Management** | Add donations (named/anonymous), set initial amount, view stats, reset all |
+| **Prayer Time Editing** | Configure Iqamah offsets per prayer, set Jumu'ah Khutba time |
+| **Homepage Layout Toggle** | Switch between Classic (V1) and Modern (V2) homepage layouts |
+| **Password Management** | Secure password change with re-authentication |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Admin Guide
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Login** — Go to [ibf-pocking.de/admin/login](https://ibf-pocking.de/admin/login)
+2. **Dashboard** — Overview of donation progress + quick links
+3. **Donations** — Add new donations as they come in via bank transfer. The progress bar updates live on the public site
+4. **Prayer Times** — Update Iqamah offsets when the mosque schedule changes. Jumu'ah Khutba time is set separately
+5. **Homepage** — Toggle between two layout styles from the dashboard
+6. **Password** — Change your admin password under `/admin/passwort`
