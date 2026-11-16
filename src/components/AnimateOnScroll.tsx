@@ -28,7 +28,9 @@ export default function AnimateOnScroll({
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15 }
+      // Fire once the element's top is ~10% into the viewport. A ratio threshold (e.g. 0.15)
+      // can never be reached by very tall blocks like a big gallery, leaving them invisible.
+      { threshold: 0, rootMargin: "0px 0px -10% 0px" }
     );
 
     observer.observe(el);

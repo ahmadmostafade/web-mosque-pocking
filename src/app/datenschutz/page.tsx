@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function DatenschutzPage() {
   return (
     <div className="page-container-narrow page-section">
-      <h1 className="text-4xl font-bold text-mosque-green-700 mb-8">
+      <h1 className="text-3xl sm:text-4xl font-bold text-mosque-green-700 mb-8 hyphens-auto break-words">
         Datenschutzerklärung
       </h1>
 
