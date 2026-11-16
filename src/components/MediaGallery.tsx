@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { MediaItem, filterMedia } from "@/lib/media";
 
 type Category = { value: string; label: string };
@@ -122,8 +123,8 @@ export default function MediaGallery({ items, categories }: Props) {
         </div>
       )}
 
-      {/* Lightbox */}
-      {lightboxItem && lightboxIndex !== null && (
+      {/* Lightbox – portaled to <body> so the scroll animation's transform can't trap "fixed" inside the grid */}
+      {lightboxItem && lightboxIndex !== null && createPortal(
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
           onClick={closeLightbox}
@@ -199,7 +200,8 @@ export default function MediaGallery({ items, categories }: Props) {
               </svg>
             </button>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
