@@ -10,10 +10,11 @@ Gehen Sie auf **/admin** und melden Sie sich an. Klicken Sie auf **Galerie**.
 
 ## 2. Fotos auswählen und hochladen
 
-1. Klicken Sie auf **Dateien auswählen**. Sie können mehrere Fotos auf einmal wählen.
-2. Wählen Sie eine **Kategorie** (z. B. „Nachher“ oder „Veranstaltungen“).
-3. Optional: eine kurze **Beschreibung**. Sie gilt für alle gewählten Fotos.
-4. Klicken Sie auf **Hochladen**.
+1. Ziehen Sie die Fotos in das gestrichelte Feld – oder klicken Sie auf **auswählen**. Mehrere Fotos auf einmal gehen.
+2. Sie sehen eine Vorschau. Mit **×** entfernen Sie ein Foto wieder.
+3. Wählen Sie eine **Kategorie** (z. B. „Nachher“ oder „Veranstaltungen“).
+4. Optional: eine kurze **Beschreibung**. Sie gilt für alle gewählten Fotos.
+5. Klicken Sie auf **Fotos hochladen**.
 
 ![Formular zum Hochladen](2-hochladen.png)
 
