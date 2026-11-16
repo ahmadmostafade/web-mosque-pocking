@@ -70,6 +70,17 @@ async function initializeDatabase(): Promise<void> {
       expires_at TIMESTAMP NOT NULL
     );
 
+    -- Gallery images uploaded via admin (bytes stored inline, served via /api/gallery/[id])
+    CREATE TABLE IF NOT EXISTS gallery_images (
+      id SERIAL PRIMARY KEY,
+      category TEXT NOT NULL,
+      caption TEXT,
+      content_type TEXT NOT NULL,
+      data BYTEA NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      created_by TEXT
+    );
+
     -- Login attempts table (for rate limiting)
     CREATE TABLE IF NOT EXISTS login_attempts (
       ip TEXT PRIMARY KEY,

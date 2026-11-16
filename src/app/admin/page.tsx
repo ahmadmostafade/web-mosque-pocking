@@ -138,6 +138,14 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
+            href="/admin/galerie"
+            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+          >
+            <h3 className="font-bold text-mosque-green-700 mb-2">Galerie</h3>
+            <p className="text-sm text-gray-600">Fotos hochladen und löschen</p>
+          </Link>
+
+          <Link
             href="/admin/passwort"
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
           >

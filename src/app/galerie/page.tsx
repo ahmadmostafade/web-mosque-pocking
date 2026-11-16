@@ -2,15 +2,20 @@ import { Metadata } from "next";
 import MediaGallery from "@/components/MediaGallery";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getMediaItems } from "@/lib/media-server";
+import { listGalleryImages } from "@/lib/db-gallery";
 import { MEDIA_CATEGORIES } from "@/lib/media";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Galerie",
   description: "Fotos und Videos der Moschee Pocking und der Renovierungsarbeiten.",
 };
 
-export default function GaleriePage() {
-  const allItems = getMediaItems();
+export default async function GaleriePage() {
+  // Newest admin uploads first, then the photos shipped with the website.
+  const uploaded = await listGalleryImages().catch(() => []);
+  const allItems = [...uploaded, ...getMediaItems()];
 
   // Only show tabs for categories that actually have files
   const activeCategories = MEDIA_CATEGORIES.filter(
